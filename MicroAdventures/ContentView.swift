@@ -108,7 +108,11 @@ struct ContentView: View {
                 existing.description = sample.description
                 existing.category = sample.category
                 existing.effort = sample.effort
+                existing.recommendedEnergy = sample.recommendedEnergy
+                existing.bestTimeWindow = sample.bestTimeWindow
                 existing.durationMinutes = sample.durationMinutes
+                existing.startPointName = sample.startPointName
+                existing.endPointName = sample.endPointName
                 existing.locationName = sample.locationName
                 existing.latitude = sample.latitude
                 existing.longitude = sample.longitude
@@ -316,6 +320,18 @@ struct ContentView: View {
         return top.joined(separator: " • ")
     }
 
+    private func infoRow(icon: String, text: String) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: icon)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Text(text)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Spacer()
+        }
+    }
+
     private func focusOn(_ adventure: Adventure) {
         cameraPosition = .region(MKCoordinateRegion(
             center: adventure.coordinate,
@@ -450,16 +466,23 @@ struct ContentView: View {
                         .foregroundStyle(.secondary)
                         .lineLimit(3)
 
+                        VStack(alignment: .leading, spacing: 4) {
+                            infoRow(icon: "bolt.fill", text: "Energy: \(adventure.recommendedEnergy.rawValue)")
+                            infoRow(icon: "clock", text: "Best time: \(adventure.bestTimeWindow.rawValue)")
+                            infoRow(icon: "flag", text: "Start: \(adventure.startPointName)")
+                            infoRow(icon: "flag.checkered", text: "End: \(adventure.endPointName)")
+                        }
+
                         HStack {
                             Spacer()
                             Button {
                                 toggleCompleted(for: adventure)
                             } label: {
-                                Text("Done")
+                                Text(adventure.isCompleted ? "Completed" : "Done")
                                     .font(.subheadline)
                                     .padding(.horizontal, 16)
                                     .padding(.vertical, 8)
-                                    .background(doneButtonBackground)
+                                    .background(adventure.isCompleted ? Color.green.opacity(0.25) : doneButtonBackground)
                                     .foregroundStyle(doneButtonForeground)
                                     .clipShape(Capsule())
                             }
