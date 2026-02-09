@@ -202,6 +202,10 @@ struct ContentView: View {
         colorScheme == .dark ? Color.white.opacity(0.85) : Color.gray
     }
 
+    private var topSectionHeight: CGFloat {
+        UIScreen.main.bounds.height * 0.33
+    }
+
     private var filteredAdventures: [Adventure] {
         adventures.filter { adventure in
             selectedCategories.contains(adventure.category) && selectedEfforts.contains(adventure.effort)
@@ -508,6 +512,7 @@ struct ContentView: View {
                     .accessibilityLabel("Filter adventures")
                 }
                 .padding(.horizontal)
+                .padding(.top, 6)
 
                 if let adventure = currentAdventure {
                     VStack(alignment: .leading, spacing: 8) {
@@ -571,7 +576,7 @@ struct ContentView: View {
                     .background(cardBackground, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                     .shadow(color: .black.opacity(0.1), radius: 8, y: 4)
                     .padding(.horizontal)
-                    .padding(.top, 50)
+                    .padding(.top, 34)
                 } else {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("No pick for today.")
@@ -594,11 +599,12 @@ struct ContentView: View {
                     .background(cardBackground, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                     .shadow(color: .black.opacity(0.1), radius: 8, y: 4)
                     .padding(.horizontal)
-                    .padding(.top, 50)
+                    .padding(.top, 34)
                 }
             }
-            .padding(.top, 120)
+            .padding(.top, 98)
             .padding(.bottom, 6)
+            .frame(height: topSectionHeight, alignment: .top)
         }
         .mapStyle(.standard)
         .ignoresSafeArea()
