@@ -92,6 +92,9 @@ struct ContentView: View {
     private static let dailyPickDateKey = "micro_adventures_daily_pick_date_v1"
     private static let dailyPickIdKey = "micro_adventures_daily_pick_id_v1"
 
+    // Height factor for the top section; actual height is computed from view geometry to avoid UIScreen.main deprecation.
+    private let topSectionHeightFactor: CGFloat = 0.33
+
     init() {
         let initialAdventures = ContentView.loadStoredAdventures()
         let storedPick = ContentView.loadStoredDailyPick()
@@ -143,6 +146,8 @@ struct ContentView: View {
             if var existing = storedById[sample.id] {
                 existing.title = sample.title
                 existing.description = sample.description
+                existing.decisionTags = sample.decisionTags
+                existing.flavorTags = sample.flavorTags
                 existing.category = sample.category
                 existing.effort = sample.effort
                 existing.recommendedEnergy = sample.recommendedEnergy
@@ -200,10 +205,6 @@ struct ContentView: View {
 
     private var pinColor: Color {
         colorScheme == .dark ? Color.white.opacity(0.85) : Color.gray
-    }
-
-    private var topSectionHeight: CGFloat {
-        UIScreen.main.bounds.height * 0.33
     }
 
     private var filteredAdventures: [Adventure] {
@@ -327,38 +328,105 @@ struct ContentView: View {
         return top.adventure
     }
 
+    private enum WhyReasonKind {
+        case time
+        case energy
+        case weather
+        case novelty
+    }
+
+    private struct WhyReason {
+        let kind: WhyReasonKind
+        let score: Double
+        let clarityPriority: Int
+        let sentence: String
+    }
+
     private func whyThis(_ adventure: Adventure) -> String {
-        var reasons: [(text: String, weight: Double)] = []
-
         let timeContribution = timeScore(for: adventure) * RecommendationWeights.timeMatch
-        if timeContribution > 0.05 {
-            let timeText = adventure.durationMinutes <= selectedDuration.rawValue
-                ? "fits \(selectedDuration.label)"
-                : "close to \(selectedDuration.label)"
-            reasons.append((timeText, timeContribution))
-        }
-
         let energyContribution = energyScore(for: adventure) * RecommendationWeights.energyMatch
-        if energyContribution > 0.05 {
-            reasons.append(("matches \(selectedEnergy.rawValue.lowercased()) energy", energyContribution))
-        }
-
         let weatherContribution = weatherScore(for: adventure) * RecommendationWeights.weatherMatch
-        if weatherContribution > 0.05 {
-            reasons.append(("works for \(selectedWeather.rawValue.lowercased()) weather", weatherContribution))
-        }
-
         let noveltyContribution = noveltyScore(for: adventure) * RecommendationWeights.novelty
-        if noveltyContribution > 0.05 {
-            reasons.append(("fresh pick", noveltyContribution))
+
+        let strongThreshold = 0.05
+        var candidates: [WhyReason] = []
+
+        if timeContribution > strongThreshold {
+            let sentence = adventure.durationMinutes <= selectedDuration.rawValue
+                ? "Fits your \(selectedDuration.label) window without rushing."
+                : "Close to your \(selectedDuration.label) window and still manageable."
+            candidates.append(WhyReason(
+                kind: .time,
+                score: timeContribution,
+                clarityPriority: 3,
+                sentence: sentence
+            ))
         }
 
-        let sorted = reasons.sorted { $0.weight > $1.weight }
-        let top = sorted.prefix(2).map { $0.text }
-        if top.isEmpty {
-            return "best match for your filters"
+        if energyContribution > strongThreshold {
+            candidates.append(WhyReason(
+                kind: .energy,
+                score: energyContribution,
+                clarityPriority: 2,
+                sentence: "Matches your \(selectedEnergy.rawValue.lowercased())-energy pace right now."
+            ))
         }
-        return top.joined(separator: " • ")
+
+        if weatherContribution > strongThreshold {
+            candidates.append(WhyReason(
+                kind: .weather,
+                score: weatherContribution,
+                clarityPriority: 1,
+                sentence: "Works well for \(selectedWeather.rawValue.lowercased()) weather now."
+            ))
+        }
+
+        if noveltyContribution > strongThreshold {
+            candidates.append(WhyReason(
+                kind: .novelty,
+                score: noveltyContribution,
+                clarityPriority: 0,
+                sentence: "You have not seen this pick recently."
+            ))
+        }
+
+        guard !candidates.isEmpty else {
+            return "Best match for your current context."
+        }
+
+        let tieEpsilon = 0.02
+        let maxScore = candidates.map(\.score).max() ?? 0
+        let timeMustBeIncluded = candidates.contains {
+            $0.kind == .time && $0.score >= (maxScore - tieEpsilon)
+        }
+
+        let sorted = candidates.sorted { lhs, rhs in
+            let diff = lhs.score - rhs.score
+            if abs(diff) <= tieEpsilon {
+                return lhs.clarityPriority > rhs.clarityPriority
+            }
+            return diff > 0
+        }
+
+        var selected: [WhyReason] = []
+        if timeMustBeIncluded, let timeReason = sorted.first(where: { $0.kind == .time }) {
+            selected.append(timeReason)
+        }
+
+        for candidate in sorted {
+            if selected.contains(where: { $0.kind == candidate.kind }) {
+                continue
+            }
+            selected.append(candidate)
+            if selected.count == 2 {
+                break
+            }
+        }
+
+        if selected.count == 1 {
+            return selected[0].sentence
+        }
+        return "\(selected[0].sentence) • \(selected[1].sentence)"
     }
 
     private func infoRow(icon: String, text: String) -> some View {
@@ -472,244 +540,247 @@ struct ContentView: View {
     }
 
     var body: some View {
-        ZStack(alignment: .top) {
-            Map(position: $cameraPosition) {
-                UserAnnotation()
-                if let adventure = currentAdventure {
-                    Annotation(adventure.locationName, coordinate: adventure.coordinate) {
-                        Image(systemName: "mappin.circle.fill")
-                            .font(.title2)
-                            .foregroundStyle(pinColor)
-                            .shadow(radius: 2)
+        GeometryReader { proxy in
+            let topHeight = proxy.size.height * topSectionHeightFactor
+            ZStack(alignment: .top) {
+                Map(position: $cameraPosition) {
+                    UserAnnotation()
+                    if let adventure = currentAdventure {
+                        Annotation(adventure.locationName, coordinate: adventure.coordinate) {
+                            Image(systemName: "mappin.circle.fill")
+                                .font(.title2)
+                                .foregroundStyle(pinColor)
+                                .shadow(radius: 2)
+                        }
                     }
                 }
             }
-        }
-        .safeAreaInset(edge: .top) {
-            VStack(spacing: 1) {
-                HStack {
-                    Text("Micro Adventures")
-                        .font(.title2)
-                        .bold()
-                        .foregroundStyle(.primary)
-                    Spacer()
-                    Button {
-                        centerMapOnUser()
-                    } label: {
-                        Image(systemName: "location.circle.fill")
+            .safeAreaInset(edge: .top) {
+                VStack(spacing: 1) {
+                    HStack {
+                        Text("Micro Adventures")
                             .font(.title2)
-                            .foregroundStyle(filterIconColor)
-                    }
-                    .accessibilityLabel("Center map on my location")
-
-                    Button {
-                        showingFilters = true
-                    } label: {
-                        Image(systemName: "line.3.horizontal.decrease.circle.fill")
-                            .font(.title2)
-                            .foregroundStyle(filterIconColor)
-                    }
-                    .accessibilityLabel("Filter adventures")
-                }
-                .padding(.horizontal)
-                .padding(.top, 6)
-
-                if let adventure = currentAdventure {
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack(spacing: 8) {
-                            Text(adventure.category.rawValue)
-                                .font(.caption)
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 6)
-                                .background(chipBackground)
-                                .clipShape(Capsule())
-
-                            Text(adventure.effort.rawValue)
-                                .font(.caption)
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 6)
-                                .background(chipBackground)
-                                .clipShape(Capsule())
+                            .bold()
+                            .foregroundStyle(.primary)
+                        Spacer()
+                        Button {
+                            centerMapOnUser()
+                        } label: {
+                            Image(systemName: "location.circle.fill")
+                                .font(.title2)
+                                .foregroundStyle(filterIconColor)
                         }
+                        .accessibilityLabel("Center map on my location")
 
-                    Text(adventure.title)
-                        .font(.headline)
-                        .bold()
-                        .foregroundStyle(.primary)
-                        .lineLimit(2)
-
-                    Text("Why this? \(whyThis(adventure))")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(2)
-
-                    Text(adventure.description)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(3)
-
-                        VStack(alignment: .leading, spacing: 4) {
-                            infoRow(icon: "bolt.fill", text: "Energy: \(adventure.recommendedEnergy.rawValue)")
-                            infoRow(icon: "clock", text: "Best time: \(adventure.bestTimeWindow.rawValue)")
-                            infoRow(icon: "flag", text: "Start: \(adventure.startPointName)")
-                            infoRow(icon: "flag.checkered", text: "End: \(adventure.endPointName)")
+                        Button {
+                            showingFilters = true
+                        } label: {
+                            Image(systemName: "line.3.horizontal.decrease.circle.fill")
+                                .font(.title2)
+                                .foregroundStyle(filterIconColor)
                         }
+                        .accessibilityLabel("Filter adventures")
+                    }
+                    .padding(.horizontal)
+                    .padding(.top, 6)
 
-                        HStack {
-                            Spacer()
-                            Button {
-                                toggleCompleted(for: adventure)
-                            } label: {
-                                Text(adventure.isCompleted ? "Completed" : "Done")
-                                    .font(.subheadline)
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 8)
-                                    .background(adventure.isCompleted ? Color.green.opacity(0.25) : doneButtonBackground)
-                                    .foregroundStyle(doneButtonForeground)
+                    if let adventure = currentAdventure {
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack(spacing: 8) {
+                                Text(adventure.category.rawValue)
+                                    .font(.caption)
+                                    .padding(.horizontal, 10)
+                                    .padding(.vertical, 6)
+                                    .background(chipBackground)
+                                    .clipShape(Capsule())
+
+                                Text(adventure.effort.rawValue)
+                                    .font(.caption)
+                                    .padding(.horizontal, 10)
+                                    .padding(.vertical, 6)
+                                    .background(chipBackground)
                                     .clipShape(Capsule())
                             }
-                            .buttonStyle(.plain)
-                            .accessibilityLabel(adventure.isCompleted ? "Adventure completed" : "Mark adventure as completed")
-                        }
-                    }
-                    .padding(14)
-                    .background(cardBackground, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-                    .shadow(color: .black.opacity(0.1), radius: 8, y: 4)
-                    .padding(.horizontal)
-                    .padding(.top, 34)
-                } else {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("No pick for today.")
+
+                        Text(adventure.title)
                             .font(.headline)
+                            .bold()
                             .foregroundStyle(.primary)
-                        Text("No recommendation fits your current filters. Try relaxing constraints or check back tomorrow.")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                        Button("Reset Filters") {
-                            selectedCategories = Set(Category.allCases)
-                            selectedEfforts = Set(Effort.allCases)
-                            selectedEnergy = .medium
-                            selectedWeather = .clear
-                            selectedDuration = .thirty
-                            ensureDailyPick(forceReselect: true)
-                        }
-                        .buttonStyle(.bordered)
-                    }
-                    .padding(14)
-                    .background(cardBackground, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-                    .shadow(color: .black.opacity(0.1), radius: 8, y: 4)
-                    .padding(.horizontal)
-                    .padding(.top, 34)
-                }
-            }
-            .padding(.top, 98)
-            .padding(.bottom, 6)
-            .frame(height: topSectionHeight, alignment: .top)
-        }
-        .mapStyle(.standard)
-        .ignoresSafeArea()
-        .onAppear {
-            userLocationManager.requestPermissionAndLocation()
-            ensureDailyPick(forceReselect: false)
-        }
-        .onReceive(userLocationManager.$coordinate.compactMap { $0 }) { coordinate in
-            if pendingCenterOnUser {
-                pendingCenterOnUser = false
-                didApplyUserLocation = true
-                setCameraOnUser(coordinate)
-            } else if !didApplyUserLocation {
-                didApplyUserLocation = true
-                if let adventure = currentAdventure {
-                    focusOn(adventure)
-                } else {
-                    setCameraOnUser(coordinate)
-                }
-            }
-        }
-        .onReceive(timeTicker) { date in
-            now = date
-            let newDaySeed = Calendar.current.ordinality(of: .day, in: .year, for: date) ?? daySeedValue
-            if newDaySeed != daySeedValue {
-                daySeedValue = newDaySeed
-                ensureDailyPick(forceReselect: true)
-            }
-            let bucket = TimeBucket.current(for: date)
-            if bucket != timeBucket {
-                timeBucket = bucket
-            }
-        }
-        .onChange(of: selectedCategories) { ensureDailyPick(forceReselect: true) }
-        .onChange(of: selectedEfforts) { ensureDailyPick(forceReselect: true) }
-        .onChange(of: selectedEnergy) { ensureDailyPick(forceReselect: true) }
-        .onChange(of: selectedWeather) { ensureDailyPick(forceReselect: true) }
-        .onChange(of: selectedDuration) { ensureDailyPick(forceReselect: true) }
-        .sheet(isPresented: $showingFilters) {
-            NavigationStack {
-                Form {
-                    Section("Categories") {
-                        HStack {
-                            Button("Select All") { selectedCategories = Set(Category.allCases) }
-                            Spacer()
-                            Button("Clear") { selectedCategories.removeAll() }
-                        }
-                        ForEach(Category.allCases) { category in
-                            Toggle(category.rawValue, isOn: Binding(
-                                get: { selectedCategories.contains(category) },
-                                set: { isOn in
-                                    if isOn { selectedCategories.insert(category) } else { selectedCategories.remove(category) }
-                                }
-                            ))
-                        }
-                    }
-                    Section("Effort Level") {
-                        HStack {
-                            Button("Select All") { selectedEfforts = Set(Effort.allCases) }
-                            Spacer()
-                            Button("Clear") { selectedEfforts.removeAll() }
-                        }
-                        ForEach(Effort.allCases) { effort in
-                            Toggle(effort.rawValue, isOn: Binding(
-                                get: { selectedEfforts.contains(effort) },
-                                set: { isOn in
-                                    if isOn { selectedEfforts.insert(effort) } else { selectedEfforts.remove(effort) }
-                                }
-                            ))
-                        }
-                    }
-                    Section("Context") {
-                        Picker("Energy", selection: $selectedEnergy) {
-                            ForEach(EnergyLevel.allCases) { energy in
-                                Text(energy.rawValue).tag(energy)
-                            }
-                        }
-                        .pickerStyle(.segmented)
+                            .lineLimit(2)
 
-                        Picker("Time Available", selection: $selectedDuration) {
-                            ForEach(DurationOption.allCases) { option in
-                                Text(option.label).tag(option)
-                            }
-                        }
-                        .pickerStyle(.segmented)
-
-                        Picker("Weather", selection: $selectedWeather) {
-                            ForEach(WeatherCondition.allCases) { weather in
-                                Text(weather.rawValue).tag(weather)
-                            }
-                        }
-                        .pickerStyle(.segmented)
-
-                        Text("Time: \(timeBucket.rawValue)")
+                        Text("Why this? \(whyThis(adventure))")
                             .font(.caption)
                             .foregroundStyle(.secondary)
+                            .lineLimit(2)
+
+                        Text(adventure.description)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(3)
+
+                            VStack(alignment: .leading, spacing: 4) {
+                                infoRow(icon: "bolt.fill", text: "Energy: \(adventure.recommendedEnergy.rawValue)")
+                                infoRow(icon: "clock", text: "Best time: \(adventure.bestTimeWindow.rawValue)")
+                                infoRow(icon: "flag", text: "Start: \(adventure.startPointName)")
+                                infoRow(icon: "flag.checkered", text: "End: \(adventure.endPointName)")
+                            }
+
+                            HStack {
+                                Spacer()
+                                Button {
+                                    toggleCompleted(for: adventure)
+                                } label: {
+                                    Text(adventure.isCompleted ? "Completed" : "Done")
+                                        .font(.subheadline)
+                                        .padding(.horizontal, 16)
+                                        .padding(.vertical, 8)
+                                        .background(adventure.isCompleted ? Color.green.opacity(0.25) : doneButtonBackground)
+                                        .foregroundStyle(doneButtonForeground)
+                                        .clipShape(Capsule())
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel(adventure.isCompleted ? "Adventure completed" : "Mark adventure as completed")
+                            }
+                        }
+                        .padding(14)
+                        .background(cardBackground, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        .shadow(color: .black.opacity(0.1), radius: 8, y: 4)
+                        .padding(.horizontal)
+                        .padding(.top, 34)
+                    } else {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("No pick for today.")
+                                .font(.headline)
+                                .foregroundStyle(.primary)
+                            Text("No recommendation fits your current filters. Try relaxing constraints or check back tomorrow.")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            Button("Reset Filters") {
+                                selectedCategories = Set(Category.allCases)
+                                selectedEfforts = Set(Effort.allCases)
+                                selectedEnergy = .medium
+                                selectedWeather = .clear
+                                selectedDuration = .thirty
+                                ensureDailyPick(forceReselect: true)
+                            }
+                            .buttonStyle(.bordered)
+                        }
+                        .padding(14)
+                        .background(cardBackground, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        .shadow(color: .black.opacity(0.1), radius: 8, y: 4)
+                        .padding(.horizontal)
+                        .padding(.top, 34)
                     }
                 }
-                .navigationTitle("Filters")
-                .toolbar {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("Close") { showingFilters = false }
+                .padding(.top, 98)
+                .padding(.bottom, 6)
+                .frame(height: topHeight, alignment: .top)
+            }
+            .mapStyle(.standard)
+            .ignoresSafeArea()
+            .onAppear {
+                userLocationManager.requestPermissionAndLocation()
+                ensureDailyPick(forceReselect: false)
+            }
+            .onReceive(userLocationManager.$coordinate.compactMap { $0 }) { coordinate in
+                if pendingCenterOnUser {
+                    pendingCenterOnUser = false
+                    didApplyUserLocation = true
+                    setCameraOnUser(coordinate)
+                } else if !didApplyUserLocation {
+                    didApplyUserLocation = true
+                    if let adventure = currentAdventure {
+                        focusOn(adventure)
+                    } else {
+                        setCameraOnUser(coordinate)
                     }
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button("Apply") { showingFilters = false }
+                }
+            }
+            .onReceive(timeTicker) { date in
+                now = date
+                let newDaySeed = Calendar.current.ordinality(of: .day, in: .year, for: date) ?? daySeedValue
+                if newDaySeed != daySeedValue {
+                    daySeedValue = newDaySeed
+                    ensureDailyPick(forceReselect: true)
+                }
+                let bucket = TimeBucket.current(for: date)
+                if bucket != timeBucket {
+                    timeBucket = bucket
+                }
+            }
+            .onChange(of: selectedCategories) { ensureDailyPick(forceReselect: true) }
+            .onChange(of: selectedEfforts) { ensureDailyPick(forceReselect: true) }
+            .onChange(of: selectedEnergy) { ensureDailyPick(forceReselect: true) }
+            .onChange(of: selectedWeather) { ensureDailyPick(forceReselect: true) }
+            .onChange(of: selectedDuration) { ensureDailyPick(forceReselect: true) }
+            .sheet(isPresented: $showingFilters) {
+                NavigationStack {
+                    Form {
+                        Section("Categories") {
+                            HStack {
+                                Button("Select All") { selectedCategories = Set(Category.allCases) }
+                                Spacer()
+                                Button("Clear") { selectedCategories.removeAll() }
+                            }
+                            ForEach(Category.allCases) { category in
+                                Toggle(category.rawValue, isOn: Binding(
+                                    get: { selectedCategories.contains(category) },
+                                    set: { isOn in
+                                        if isOn { selectedCategories.insert(category) } else { selectedCategories.remove(category) }
+                                    }
+                                ))
+                            }
+                        }
+                        Section("Effort Level") {
+                            HStack {
+                                Button("Select All") { selectedEfforts = Set(Effort.allCases) }
+                                Spacer()
+                                Button("Clear") { selectedEfforts.removeAll() }
+                            }
+                            ForEach(Effort.allCases) { effort in
+                                Toggle(effort.rawValue, isOn: Binding(
+                                    get: { selectedEfforts.contains(effort) },
+                                    set: { isOn in
+                                        if isOn { selectedEfforts.insert(effort) } else { selectedEfforts.remove(effort) }
+                                    }
+                                ))
+                            }
+                        }
+                        Section("Context") {
+                            Picker("Energy", selection: $selectedEnergy) {
+                                ForEach(EnergyLevel.allCases) { energy in
+                                    Text(energy.rawValue).tag(energy)
+                                }
+                            }
+                            .pickerStyle(.segmented)
+
+                            Picker("Time Available", selection: $selectedDuration) {
+                                ForEach(DurationOption.allCases) { option in
+                                    Text(option.label).tag(option)
+                                }
+                            }
+                            .pickerStyle(.segmented)
+
+                            Picker("Weather", selection: $selectedWeather) {
+                                ForEach(WeatherCondition.allCases) { weather in
+                                    Text(weather.rawValue).tag(weather)
+                                }
+                            }
+                            .pickerStyle(.segmented)
+
+                            Text("Time: \(timeBucket.rawValue)")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .navigationTitle("Filters")
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Close") { showingFilters = false }
+                        }
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button("Apply") { showingFilters = false }
+                        }
                     }
                 }
             }

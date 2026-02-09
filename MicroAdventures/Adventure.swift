@@ -51,6 +51,8 @@ struct Adventure: Identifiable, Hashable, Codable, Sendable {
     var id: UUID = UUID()
     var title: String
     var description: String
+    var decisionTags: [String]
+    var flavorTags: [String]
     var category: Category
     var effort: Effort
     var recommendedEnergy: EnergyLevel
@@ -76,7 +78,9 @@ struct AdventureSamples {
         Adventure(
             id: UUID(uuidString: "242FE86A-C759-4C70-8932-7C3E175FD048")!,
             title: "Sunset Hill Walk",
-            description: "A quick loop to catch golden hour views and unwind after work.",
+            description: "Walk one loop only, then stop once to notice one new detail.",
+            decisionTags: ["low-energy", "evening", "walkable", "outdoor"],
+            flavorTags: ["calm", "micro-hook", "grounding"],
             category: .nature,
             effort: .easy,
             recommendedEnergy: .low,
@@ -92,7 +96,9 @@ struct AdventureSamples {
         Adventure(
             id: UUID(uuidString: "F0E50D15-E1A6-4329-83AD-810933EECD5E")!,
             title: "Riverside Coffee Dash",
-            description: "Bike to the riverside kiosk for a coffee and back in under an hour.",
+            description: "Do one short out-and-back only, and turn back after 20 minutes.",
+            decisionTags: ["medium-energy", "morning", "outdoor", "short"],
+            flavorTags: ["rhythm", "micro-hook", "simple"],
             category: .urban,
             effort: .moderate,
             recommendedEnergy: .medium,
@@ -108,7 +114,9 @@ struct AdventureSamples {
         Adventure(
             id: UUID(uuidString: "F11361E2-983B-4A70-8B0C-D0488C47D4B8")!,
             title: "Night Sky Stroll",
-            description: "A quiet neighborhood walk to spot constellations after dinner.",
+            description: "Walk slowly and stop after exactly 10 minutes to look up once.",
+            decisionTags: ["low-energy", "night", "walkable", "outdoor"],
+            flavorTags: ["quiet", "micro-hook", "reset"],
             category: .night,
             effort: .easy,
             recommendedEnergy: .low,
@@ -120,6 +128,24 @@ struct AdventureSamples {
             latitude: 37.3230,
             longitude: -122.0322,
             isCompleted: true
+        ),
+        Adventure(
+            id: UUID(uuidString: "C5440FF4-8D1B-40E5-AADE-F0031AACA222")!,
+            title: "Morning Entry Reset",
+            description: "Set a 12-minute timer and reset one small home zone, then stop.",
+            decisionTags: ["low-energy", "morning", "indoor", "no-walk"],
+            flavorTags: ["micro-hook", "quick-win", "grounding"],
+            category: .family,
+            effort: .easy,
+            recommendedEnergy: .low,
+            bestTimeWindow: .morning,
+            durationMinutes: 12,
+            startPointName: "Home",
+            endPointName: "Home",
+            locationName: "Home Entry",
+            latitude: 37.3230,
+            longitude: -122.0322,
+            isCompleted: false
         )
     ]
 }
@@ -129,6 +155,8 @@ extension Adventure {
         case id
         case title
         case description
+        case decisionTags = "decision_tags"
+        case flavorTags = "flavor_tags"
         case category
         case effort
         case recommendedEnergy
@@ -149,6 +177,8 @@ extension Adventure {
         id = try container.decodeIfPresent(UUID.self, forKey: .id) ?? UUID()
         title = try container.decode(String.self, forKey: .title)
         description = try container.decode(String.self, forKey: .description)
+        decisionTags = try container.decodeIfPresent([String].self, forKey: .decisionTags) ?? []
+        flavorTags = try container.decodeIfPresent([String].self, forKey: .flavorTags) ?? []
         category = try container.decode(Category.self, forKey: .category)
         effort = try container.decode(Effort.self, forKey: .effort)
         recommendedEnergy = try container.decodeIfPresent(EnergyLevel.self, forKey: .recommendedEnergy) ?? .medium
@@ -169,6 +199,8 @@ extension Adventure {
         try container.encode(id, forKey: .id)
         try container.encode(title, forKey: .title)
         try container.encode(description, forKey: .description)
+        try container.encode(decisionTags, forKey: .decisionTags)
+        try container.encode(flavorTags, forKey: .flavorTags)
         try container.encode(category, forKey: .category)
         try container.encode(effort, forKey: .effort)
         try container.encode(recommendedEnergy, forKey: .recommendedEnergy)
