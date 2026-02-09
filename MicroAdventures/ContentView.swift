@@ -9,6 +9,40 @@ import SwiftUI
 import MapKit
 internal import Combine
 
+final class UserLocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
+    @Published var coordinate: CLLocationCoordinate2D?
+
+    private let manager = CLLocationManager()
+
+    override init() {
+        super.init()
+        manager.delegate = self
+        manager.desiredAccuracy = kCLLocationAccuracyHundredMeters
+    }
+
+    func requestPermissionAndLocation() {
+        if manager.authorizationStatus == .notDetermined {
+            manager.requestWhenInUseAuthorization()
+        } else if manager.authorizationStatus == .authorizedWhenInUse || manager.authorizationStatus == .authorizedAlways {
+            manager.requestLocation()
+        }
+    }
+
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        if manager.authorizationStatus == .authorizedWhenInUse || manager.authorizationStatus == .authorizedAlways {
+            manager.requestLocation()
+        }
+    }
+
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        coordinate = locations.last?.coordinate
+    }
+
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        // Keep fallback map behavior if location is unavailable.
+    }
+}
+
 private enum TimeBucket: String {
     case morning = "Morning"
     case afternoon = "Afternoon"
@@ -32,6 +66,7 @@ private enum TimeBucket: String {
 
 struct ContentView: View {
     @Environment(\.colorScheme) private var colorScheme
+    @StateObject private var userLocationManager = UserLocationManager()
 
     @State private var selectedCategories: Set<Category> = Set(Category.allCases)
     @State private var selectedEfforts: Set<Effort> = Set(Effort.allCases)
@@ -47,6 +82,8 @@ struct ContentView: View {
     @State private var now: Date = Date()
     @State private var timeBucket: TimeBucket = TimeBucket.current(for: Date())
     @State private var daySeedValue: Int = Calendar.current.ordinality(of: .day, in: .year, for: Date()) ?? 0
+    @State private var didApplyUserLocation = false
+    @State private var pendingCenterOnUser = false
 
     @State private var cameraPosition: MapCameraPosition
     private let timeTicker = Timer.publish(every: 300, on: .main, in: .common).autoconnect()
@@ -333,10 +370,40 @@ struct ContentView: View {
     }
 
     private func focusOn(_ adventure: Adventure) {
+        if let userCoordinate = userLocationManager.coordinate {
+            let center = CLLocationCoordinate2D(
+                latitude: (userCoordinate.latitude + adventure.latitude) / 2,
+                longitude: (userCoordinate.longitude + adventure.longitude) / 2
+            )
+            let latitudeDelta = max(abs(userCoordinate.latitude - adventure.latitude) * 2.2, 0.02)
+            let longitudeDelta = max(abs(userCoordinate.longitude - adventure.longitude) * 2.2, 0.02)
+            cameraPosition = .region(MKCoordinateRegion(
+                center: center,
+                span: MKCoordinateSpan(latitudeDelta: latitudeDelta, longitudeDelta: longitudeDelta)
+            ))
+            return
+        }
+
         cameraPosition = .region(MKCoordinateRegion(
             center: adventure.coordinate,
             span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)
         ))
+    }
+
+    private func setCameraOnUser(_ coordinate: CLLocationCoordinate2D) {
+        cameraPosition = .region(MKCoordinateRegion(
+            center: coordinate,
+            span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)
+        ))
+    }
+
+    private func centerMapOnUser() {
+        pendingCenterOnUser = true
+        userLocationManager.requestPermissionAndLocation()
+        guard let userCoordinate = userLocationManager.coordinate else { return }
+        didApplyUserLocation = true
+        pendingCenterOnUser = false
+        setCameraOnUser(userCoordinate)
     }
 
     private func ensureDailyPick(forceReselect: Bool) {
@@ -403,6 +470,7 @@ struct ContentView: View {
     var body: some View {
         ZStack(alignment: .top) {
             Map(position: $cameraPosition) {
+                UserAnnotation()
                 if let adventure = currentAdventure {
                     Annotation(adventure.locationName, coordinate: adventure.coordinate) {
                         Image(systemName: "mappin.circle.fill")
@@ -414,13 +482,22 @@ struct ContentView: View {
             }
         }
         .safeAreaInset(edge: .top) {
-            VStack(spacing: 12) {
+            VStack(spacing: 1) {
                 HStack {
                     Text("Micro Adventures")
                         .font(.title2)
                         .bold()
                         .foregroundStyle(.primary)
                     Spacer()
+                    Button {
+                        centerMapOnUser()
+                    } label: {
+                        Image(systemName: "location.circle.fill")
+                            .font(.title2)
+                            .foregroundStyle(filterIconColor)
+                    }
+                    .accessibilityLabel("Center map on my location")
+
                     Button {
                         showingFilters = true
                     } label: {
@@ -525,7 +602,24 @@ struct ContentView: View {
         }
         .mapStyle(.standard)
         .ignoresSafeArea()
-        .onAppear { ensureDailyPick(forceReselect: false) }
+        .onAppear {
+            userLocationManager.requestPermissionAndLocation()
+            ensureDailyPick(forceReselect: false)
+        }
+        .onReceive(userLocationManager.$coordinate.compactMap { $0 }) { coordinate in
+            if pendingCenterOnUser {
+                pendingCenterOnUser = false
+                didApplyUserLocation = true
+                setCameraOnUser(coordinate)
+            } else if !didApplyUserLocation {
+                didApplyUserLocation = true
+                if let adventure = currentAdventure {
+                    focusOn(adventure)
+                } else {
+                    setCameraOnUser(coordinate)
+                }
+            }
+        }
         .onReceive(timeTicker) { date in
             now = date
             let newDaySeed = Calendar.current.ordinality(of: .day, in: .year, for: date) ?? daySeedValue
