@@ -75,7 +75,7 @@ struct ContentView: View {
             .onReceive(timeTicker) { date in
                 viewModel.refreshTime(date)
             }
-            .onChange(of: viewModel.currentAdventureID) { _, _ in
+            .onChange(of: viewModel.currentAdventureID) {
                 if let adventure = viewModel.currentAdventure {
                     focusOn(adventure)
                 }
