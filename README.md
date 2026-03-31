@@ -1,78 +1,44 @@
-# Micro Adventures
+# Micro Adventures (SwiftUI MVP)
 
-Micro Adventures is a decision engine that suggests short, realistic, and location-aware experiences based on the user's current context (time, energy, weather, and novelty).
+Micro Adventures is a SwiftUI iOS app that gives one daily micro-adventure suggestion based on current context and nearby location.
 
----
+## MVP Status (Implemented Today)
 
-## Vision
+- Single daily pick, persisted locally in `UserDefaults`.
+- `Reroll Today` chooses a different eligible adventure and replaces today’s official pick (also persisted).
+- Context scoring combines:
+  - time available
+  - energy level
+  - weather
+  - novelty/no-repeat window
+  - completion penalty
+  - distance from current user location (when location access is available)
+- Filters use draft state inside a sheet, with explicit `Apply` and `Close` actions.
+- Map shows the selected adventure and user location, with a center-on-user action.
+- If a stored pick is no longer valid, the app falls back to the best eligible scored match.
+- If no candidate reaches the score threshold, an empty state is shown with `Reset Filters`.
 
-Turn free time into meaningful micro-experiences without browsing, filtering, or overthinking.
+## Sample Region
 
----
+The seeded MVP adventures are centered around **Colombes, France (92700)**.
 
-## Problem
+## Project Structure
 
-Most activity apps are marketplaces.
-They overwhelm users with options, filters, and categories.
+- `MicroAdventures/ContentView.swift` — screen composition and map camera behavior.
+- `MicroAdventures/ContentViewModel.swift` — scoring, daily-pick logic, filter application, persistence.
+- `MicroAdventures/AdventureCardView.swift` — main adventure card (`Done`, `Reroll Today`).
+- `MicroAdventures/AdventureFiltersView.swift` — draft filter UI and apply/close flow.
+- `MicroAdventures/UserLocationManager.swift` — Core Location integration.
+- `MicroAdventures/Adventure.swift` — domain model and sample data.
 
-People don’t want to search.
-They want a decision.
+## Run Locally
 
----
+1. Open `MicroAdventures.xcodeproj` in Xcode.
+2. Run the `MicroAdventures` scheme on simulator or device.
+3. Grant location permission to enable distance-aware scoring.
 
-## Solution
+## Current MVP Boundaries
 
-A daily contextual pick powered by:
-- Available time
-- Energy level
-- Weather conditions
-- Novelty logic
-- (Soon) distance scoring
-
-The system prioritizes instant action over exploration.
-
----
-
-## Core UX Principle
-
-Less browsing.
-More deciding.
-
-The app should deliver a relevant suggestion in under 40 seconds.
-
----
-
-## Current Architecture (MVP)
-
-- SwiftUI-based app
-- ContentViewModel handles scoring and filtering
-- Daily pick logic with no-repeat memory
-- Context-based scoring system
-
----
-
-## Roadmap
-
-### Phase 1 (Current)
-- Improve scoring accuracy
-- Add distance weighting
-- Stabilize filter application flow
-
-### Phase 2
-- Replace filter form with decision chips
-- Add "Another Pick" quick swap
-- Introduce soft fallback when no match found
-
-### Phase 3
-- Live Adventure Mode
-- Context-aware suggestions (sunset, weather shift)
-- Passive recommendation trigger
-
----
-
-## Non-Goals
-
-- Marketplace browsing
-- Social feed
-- Over-customization
-- Complex trip planning
+- Local-only (no backend, no authentication, no cloud sync).
+- Sample-data driven (no remote content feed/CMS).
+- No social features, no marketplace browsing, no Strava integration yet.
