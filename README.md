@@ -1,44 +1,56 @@
 # Micro Adventures (SwiftUI MVP)
 
-Micro Adventures is a SwiftUI iOS app that gives one daily micro-adventure suggestion based on current context and nearby location.
+Micro Adventures is a SwiftUI iOS app that surfaces one daily micro-adventure pick based on context and proximity.
 
-## MVP Status (Implemented Today)
+## Current MVP Behavior
 
-- Single daily pick, persisted locally in `UserDefaults`.
-- `Reroll Today` chooses a different eligible adventure and replaces today’s official pick (also persisted).
-- Context scoring combines:
-  - time available
-  - energy level
-  - weather
-  - novelty/no-repeat window
-  - completion penalty
-  - distance from current user location (when location access is available)
-- Filters use draft state inside a sheet, with explicit `Apply` and `Close` actions.
-- Map shows the selected adventure and user location, with a center-on-user action.
-- If a stored pick is no longer valid, the app falls back to the best eligible scored match.
-- If no candidate reaches the score threshold, an empty state is shown with `Reset Filters`.
+- One official daily pick is stored locally (`UserDefaults`).
+- `Reroll Today` selects a different eligible adventure, replaces today’s official pick, and persists it.
+- `Done` toggles completion state for the current adventure and persists it.
+- A map view shows the active adventure pin and user position, with a center-on-user action.
 
-## Sample Region
+## Recommendation Logic (Implemented)
 
-The seeded MVP adventures are centered around **Colombes, France (92700)**.
+Scoring currently combines:
+- available time
+- energy level
+- weather
+- novelty / no-repeat memory
+- completion penalty
+- distance from current user location (when location permission is available)
+
+Fallback behavior:
+- If a stored daily pick is no longer valid, the app falls back to the best eligible scored match.
+- If no candidate reaches the minimum score threshold, the app shows an empty state with `Reset Filters`.
+
+## Filters UX (Implemented)
+
+- Filters open in a sheet with **draft state**.
+- `Apply` commits draft values.
+- `Close` dismisses without applying draft changes.
+
+## MVP Sample Region
+
+Seeded adventures are centered around **Colombes, France (92700)**.
 
 ## Project Structure
 
-- `MicroAdventures/ContentView.swift` — screen composition and map camera behavior.
-- `MicroAdventures/ContentViewModel.swift` — scoring, daily-pick logic, filter application, persistence.
-- `MicroAdventures/AdventureCardView.swift` — main adventure card (`Done`, `Reroll Today`).
-- `MicroAdventures/AdventureFiltersView.swift` — draft filter UI and apply/close flow.
+- `MicroAdventures/ContentView.swift` — screen composition, map camera behavior, and sheet wiring.
+- `MicroAdventures/ContentViewModel.swift` — scoring, daily-pick lifecycle, persistence, filter application.
+- `MicroAdventures/AdventureCardView.swift` — main card UI (`Why this?`, `Reroll Today`, `Done`).
+- `MicroAdventures/AdventureFiltersView.swift` — draft filter sheet UI.
 - `MicroAdventures/UserLocationManager.swift` — Core Location integration.
-- `MicroAdventures/Adventure.swift` — domain model and sample data.
+- `MicroAdventures/Adventure.swift` — domain model and seeded sample data.
 
 ## Run Locally
 
 1. Open `MicroAdventures.xcodeproj` in Xcode.
-2. Run the `MicroAdventures` scheme on simulator or device.
+2. Run scheme `MicroAdventures` on simulator or device.
 3. Grant location permission to enable distance-aware scoring.
 
-## Current MVP Boundaries
+## Out of Scope (for this MVP)
 
-- Local-only (no backend, no authentication, no cloud sync).
-- Sample-data driven (no remote content feed/CMS).
-- No social features, no marketplace browsing, no Strava integration yet.
+- Backend/auth/cloud sync
+- Remote content feed/CMS
+- Social features or marketplace browsing
+- Strava integration
