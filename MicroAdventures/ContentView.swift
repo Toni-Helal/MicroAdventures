@@ -75,20 +75,30 @@ struct ContentView: View {
             .onReceive(timeTicker) { date in
                 viewModel.refreshTime(date)
             }
-            .onChange(of: viewModel.currentAdventureID) {
+            .onChange(of: viewModel.currentAdventureID) { _, _ in
                 if let adventure = viewModel.currentAdventure {
                     focusOn(adventure)
                 }
             }
             .sheet(isPresented: $viewModel.showingFilters) {
                 AdventureFiltersView(
-                    selectedCategories: $viewModel.selectedCategories,
-                    selectedEfforts: $viewModel.selectedEfforts,
-                    selectedEnergy: $viewModel.selectedEnergy,
-                    selectedWeather: $viewModel.selectedWeather,
-                    selectedDuration: $viewModel.selectedDuration,
+                    selectedCategories: viewModel.selectedCategories,
+                    selectedEfforts: viewModel.selectedEfforts,
+                    selectedEnergy: viewModel.selectedEnergy,
+                    selectedWeather: viewModel.selectedWeather,
+                    selectedDuration: viewModel.selectedDuration,
                     timeBucket: viewModel.timeBucket,
-                    onClose: viewModel.hideFilters
+                    onCancel: viewModel.hideFilters,
+                    onApply: { categories, efforts, energy, weather, duration in
+                        viewModel.applyFilters(
+                            categories: categories,
+                            efforts: efforts,
+                            energy: energy,
+                            weather: weather,
+                            duration: duration
+                        )
+                        viewModel.hideFilters()
+                    }
                 )
             }
         }
@@ -123,6 +133,7 @@ struct ContentView: View {
                     adventure: adventure,
                     whyText: viewModel.whyThisText(for: adventure),
                     style: cardStyle,
+                    onAnotherPick: viewModel.rerollTodayPick,
                     onToggleCompleted: {
                         viewModel.toggleCompleted(for: adventure)
                     }
@@ -184,6 +195,8 @@ struct ContentView: View {
     }
 
     private func handleUserLocationUpdate(_ coordinate: CLLocationCoordinate2D) {
+        viewModel.updateUserCoordinate(coordinate)
+
         if pendingCenterOnUser {
             pendingCenterOnUser = false
             didApplyUserLocation = true

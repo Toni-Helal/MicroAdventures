@@ -1,4 +1,5 @@
-internal import Combine
+ internal import Combine
+import CoreLocation
 import Foundation
 
 enum TimeBucket: String {
@@ -50,6 +51,8 @@ final class ContentViewModel: ObservableObject {
     private var daySeedValue: Int = Calendar.current.ordinality(of: .day, in: .year, for: Date()) ?? 0
     private var isBootstrapping = true
     private var isBatchUpdatingContext = false
+    private var userCoordinate: CLLocationCoordinate2D?
+    private var hasDeferredDailyReselect = false
 
     private static let storageKey = "micro_adventures_store_v1"
     private static let dailyPickDateKey = "micro_adventures_daily_pick_date_v1"
@@ -90,6 +93,53 @@ final class ContentViewModel: ObservableObject {
 
     func hideFilters() {
         showingFilters = false
+        if hasDeferredDailyReselect {
+            hasDeferredDailyReselect = false
+            ensureDailyPick(forceReselect: true)
+        }
+    }
+
+    func applyFilters(
+        categories: Set<Category>,
+        efforts: Set<Effort>,
+        energy: EnergyLevel,
+        weather: WeatherCondition,
+        duration: DurationOption
+    ) {
+        performBatchContextUpdate {
+            selectedCategories = categories
+            selectedEfforts = efforts
+            selectedEnergy = energy
+            selectedWeather = weather
+            selectedDuration = duration
+        }
+    }
+
+    // Explicit product behavior: rerolling replaces today's official pick.
+    func rerollTodayPick() {
+        now = Date()
+        var excludedIDs: Set<UUID> = []
+        if let currentAdventureID {
+            excludedIDs.insert(currentAdventureID)
+        }
+        guard let next = topCandidate(excluding: excludedIDs) else { return }
+        currentAdventureID = next.id
+        dailyPickDate = Calendar.current.startOfDay(for: now)
+        dailyPickAdventureID = next.id
+        markSeen(next)
+        persistAdventures()
+        persistDailyPick()
+    }
+
+    func updateUserCoordinate(_ coordinate: CLLocationCoordinate2D) {
+        if let current = userCoordinate {
+            let moved = CLLocation(latitude: current.latitude, longitude: current.longitude)
+                .distance(from: CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude))
+            if moved < 100 {
+                return
+            }
+        }
+        userCoordinate = coordinate
     }
 
     func refreshTime(_ date: Date) {
@@ -97,7 +147,11 @@ final class ContentViewModel: ObservableObject {
         let newDaySeed = Calendar.current.ordinality(of: .day, in: .year, for: date) ?? daySeedValue
         if newDaySeed != daySeedValue {
             daySeedValue = newDaySeed
-            ensureDailyPick(forceReselect: true)
+            if showingFilters {
+                hasDeferredDailyReselect = true
+            } else {
+                ensureDailyPick(forceReselect: true)
+            }
         }
 
         let bucket = TimeBucket.current(for: date)
@@ -159,6 +213,7 @@ final class ContentViewModel: ObservableObject {
         let energyContribution = energyScore(for: adventure) * RecommendationWeights.energyMatch
         let weatherContribution = weatherScore(for: adventure) * RecommendationWeights.weatherMatch
         let noveltyContribution = noveltyScore(for: adventure) * RecommendationWeights.novelty
+        let distanceContribution = distanceScore(for: adventure) * RecommendationWeights.distanceMatch
 
         let strongThreshold = 0.05
         var candidates: [WhyReason] = []
@@ -202,6 +257,15 @@ final class ContentViewModel: ObservableObject {
             ))
         }
 
+        if distanceContribution > strongThreshold {
+            candidates.append(WhyReason(
+                kind: .distance,
+                score: distanceContribution,
+                clarityPriority: 4,
+                sentence: distanceReason(for: adventure)
+            ))
+        }
+
         guard !candidates.isEmpty else {
             return "Best match for your current context."
         }
@@ -242,10 +306,11 @@ final class ContentViewModel: ObservableObject {
     }
 
     private struct RecommendationWeights {
-        static let timeMatch = 0.35
+        static let timeMatch = 0.30
         static let energyMatch = 0.25
         static let weatherMatch = 0.15
         static let novelty = 0.15
+        static let distanceMatch = 0.15
         static let completionPenalty = -0.40
         static let eveningLowLongPenalty = -0.30
         static let recentCompletionMultiplier = 0.2
@@ -258,6 +323,7 @@ final class ContentViewModel: ObservableObject {
         case energy
         case weather
         case novelty
+        case distance
     }
 
     private struct WhyReason {
@@ -340,13 +406,43 @@ final class ContentViewModel: ObservableObject {
         return normalized
     }
 
+    private func distanceInKilometers(to adventure: Adventure) -> Double? {
+        guard let userCoordinate else { return nil }
+        let userLocation = CLLocation(latitude: userCoordinate.latitude, longitude: userCoordinate.longitude)
+        let destination = CLLocation(latitude: adventure.latitude, longitude: adventure.longitude)
+        return userLocation.distance(from: destination) / 1000
+    }
+
+    private func distanceScore(for adventure: Adventure) -> Double {
+        guard let distance = distanceInKilometers(to: adventure) else { return 0.6 }
+        switch distance {
+        case ..<2:
+            return 1.0
+        case ..<5:
+            return 0.75
+        case ..<10:
+            return 0.45
+        default:
+            return 0.2
+        }
+    }
+
+    private func distanceReason(for adventure: Adventure) -> String {
+        guard let distance = distanceInKilometers(to: adventure) else {
+            return "Practical distance for a quick outing."
+        }
+        let formatted = String(format: "%.1f", distance)
+        return "\(formatted) km away, so it is easy to start quickly."
+    }
+
     private func score(_ adventure: Adventure) -> Double {
         let timeValue = timeScore(for: adventure) * RecommendationWeights.timeMatch
         let energyValue = energyScore(for: adventure) * RecommendationWeights.energyMatch
         let weatherValue = weatherScore(for: adventure) * RecommendationWeights.weatherMatch
         let noveltyValue = noveltyScore(for: adventure) * RecommendationWeights.novelty
+        let distanceValue = distanceScore(for: adventure) * RecommendationWeights.distanceMatch
 
-        var total = timeValue + energyValue + weatherValue + noveltyValue
+        var total = timeValue + energyValue + weatherValue + noveltyValue + distanceValue
 
         if adventure.isCompleted {
             total += RecommendationWeights.completionPenalty
@@ -384,6 +480,14 @@ final class ContentViewModel: ObservableObject {
             return nil
         }
         return top.adventure
+    }
+
+    private func topCandidate(excluding excludedIDs: Set<UUID>) -> Adventure? {
+        let candidate = scoredAdventures().first { !excludedIDs.contains($0.adventure.id) }
+        guard let candidate, candidate.score >= RecommendationWeights.pickThreshold else {
+            return nil
+        }
+        return candidate.adventure
     }
 
     private func markSeen(_ adventure: Adventure) {

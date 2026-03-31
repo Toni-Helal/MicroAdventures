@@ -11,6 +11,7 @@ struct AdventureCardView: View {
     let adventure: Adventure
     let whyText: String
     let style: AdventureCardStyle
+    let onAnotherPick: () -> Void
     let onToggleCompleted: () -> Void
 
     var body: some View {
@@ -54,8 +55,23 @@ struct AdventureCardView: View {
                 AdventureInfoRow(icon: "flag.checkered", text: "End: \(adventure.endPointName)")
             }
 
-            HStack {
+            HStack(spacing: 10) {
+                Button {
+                    onAnotherPick()
+                } label: {
+                    Text("Reroll Today")
+                        .font(.subheadline.weight(.semibold))
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 8)
+                        .background(style.chipBackground)
+                        .foregroundStyle(.primary)
+                        .clipShape(Capsule())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Reroll today's adventure")
+
                 Spacer()
+
                 Button {
                     onToggleCompleted()
                 } label: {
