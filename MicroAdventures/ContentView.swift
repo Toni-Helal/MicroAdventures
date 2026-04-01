@@ -17,6 +17,7 @@ struct ContentView: View {
     @State private var didApplyUserLocation = false
     @State private var pendingCenterOnUser = false
     @State private var cameraPosition: MapCameraPosition
+    @State private var detailAdventure: Adventure?
 
     private let timeTicker = Timer.publish(every: 300, on: .main, in: .common).autoconnect()
     private let topSectionHeightFactor: CGFloat = 0.33
@@ -113,6 +114,9 @@ struct ContentView: View {
                     }
                 )
             }
+            .sheet(item: $detailAdventure) { adventure in
+                AdventureDetailView(adventure: adventure)
+            }
         }
     }
 
@@ -145,6 +149,9 @@ struct ContentView: View {
                     adventure: adventure,
                     whyText: viewModel.whyThisText(for: adventure),
                     style: cardStyle,
+                    onOpenDetails: {
+                        detailAdventure = adventure
+                    },
                     onAnotherPick: viewModel.rerollTodayPick,
                     onToggleCompleted: {
                         viewModel.toggleCompleted(for: adventure)

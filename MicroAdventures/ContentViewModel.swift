@@ -577,6 +577,13 @@ final class ContentViewModel: ObservableObject {
                 existing.durationMinutes = sample.durationMinutes
                 existing.startPointName = sample.startPointName
                 existing.endPointName = sample.endPointName
+                existing.startLatitude = sample.startLatitude
+                existing.startLongitude = sample.startLongitude
+                existing.endLatitude = sample.endLatitude
+                existing.endLongitude = sample.endLongitude
+                existing.estimatedDistanceKm = sample.estimatedDistanceKm
+                existing.highlights = sample.highlights
+                existing.tips = sample.tips
                 existing.locationName = sample.locationName
                 existing.latitude = sample.latitude
                 existing.longitude = sample.longitude

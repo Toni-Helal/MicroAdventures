@@ -11,48 +11,59 @@ struct AdventureCardView: View {
     let adventure: Adventure
     let whyText: String
     let style: AdventureCardStyle
+    let onOpenDetails: () -> Void
     let onAnotherPick: () -> Void
     let onToggleCompleted: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 8) {
-                Text(adventure.category.rawValue)
-                    .font(.caption)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 6)
-                    .background(style.chipBackground)
-                    .clipShape(Capsule())
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 8) {
+                    Text(adventure.category.rawValue)
+                        .font(.caption)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .background(style.chipBackground)
+                        .clipShape(Capsule())
 
-                Text(adventure.effort.rawValue)
+                    Text(adventure.effort.rawValue)
+                        .font(.caption)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .background(style.chipBackground)
+                        .clipShape(Capsule())
+                }
+
+                Text(adventure.title)
+                    .font(.headline)
+                    .bold()
+                    .foregroundStyle(.primary)
+                    .lineLimit(2)
+
+                Text("Why this? \(whyText)")
                     .font(.caption)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 6)
-                    .background(style.chipBackground)
-                    .clipShape(Capsule())
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+
+                Text(adventure.description)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(3)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    AdventureInfoRow(icon: "bolt.fill", text: "Energy: \(adventure.recommendedEnergy.rawValue)")
+                    AdventureInfoRow(icon: "clock", text: "Best time: \(adventure.bestTimeWindow.rawValue)")
+                    AdventureInfoRow(icon: "flag", text: "Start: \(adventure.startPointName)")
+                    AdventureInfoRow(icon: "flag.checkered", text: "End: \(adventure.endPointName)")
+                }
+
+                Text("Tap card for details")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
             }
-
-            Text(adventure.title)
-                .font(.headline)
-                .bold()
-                .foregroundStyle(.primary)
-                .lineLimit(2)
-
-            Text("Why this? \(whyText)")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .lineLimit(2)
-
-            Text(adventure.description)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .lineLimit(3)
-
-            VStack(alignment: .leading, spacing: 4) {
-                AdventureInfoRow(icon: "bolt.fill", text: "Energy: \(adventure.recommendedEnergy.rawValue)")
-                AdventureInfoRow(icon: "clock", text: "Best time: \(adventure.bestTimeWindow.rawValue)")
-                AdventureInfoRow(icon: "flag", text: "Start: \(adventure.startPointName)")
-                AdventureInfoRow(icon: "flag.checkered", text: "End: \(adventure.endPointName)")
+            .contentShape(Rectangle())
+            .onTapGesture {
+                onOpenDetails()
             }
 
             HStack(spacing: 10) {
