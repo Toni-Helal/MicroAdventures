@@ -50,6 +50,24 @@ struct ContentView: View {
         colorScheme == .dark ? Color.white.opacity(0.85) : Color.gray
     }
 
+    private var filtersExcludeAllAdventures: Bool {
+        !viewModel.adventures.contains { adventure in
+            viewModel.selectedCategories.contains(adventure.category)
+                && viewModel.selectedEfforts.contains(adventure.effort)
+        }
+    }
+
+    private var noPickTitle: String {
+        filtersExcludeAllAdventures ? "No matching adventures." : "No pick for today."
+    }
+
+    private var noPickMessage: String {
+        if filtersExcludeAllAdventures {
+            return "Current filters exclude all matches. Try loosening them."
+        }
+        return "No recommendation fits right now. Try loosening filters."
+    }
+
     var body: some View {
         GeometryReader { proxy in
             let topHeight = proxy.size.height * topSectionHeightFactor
@@ -143,6 +161,8 @@ struct ContentView: View {
             } else {
                 NoPickCardView(
                     cardBackground: cardStyle.cardBackground,
+                    title: noPickTitle,
+                    message: noPickMessage,
                     onResetFilters: {
                         viewModel.resetFilters()
                     }
