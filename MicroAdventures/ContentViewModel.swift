@@ -1,4 +1,4 @@
- internal import Combine
+internal import Combine
 import CoreLocation
 import Foundation
 
@@ -77,14 +77,25 @@ final class ContentViewModel: ObservableObject {
         adventures.first ?? AdventureSamples.all.first!
     }
 
+    var hasFilteredAdventures: Bool {
+        !filteredAdventures.isEmpty
+    }
+
+    var bestAvailableAdventure: Adventure? {
+        bestAvailableFilteredAdventure(excluding: [])
+    }
+
     var currentAdventure: Adventure? {
+        guard hasFilteredAdventures else { return nil }
+
         if let id = currentAdventureID,
            let match = adventures.first(where: { $0.id == id }),
            selectedCategories.contains(match.category),
            selectedEfforts.contains(match.effort) {
             return match
         }
-        return topCandidate()
+
+        return bestAvailableFilteredAdventure(excluding: [])
     }
 
     func showFilters() {
@@ -122,7 +133,7 @@ final class ContentViewModel: ObservableObject {
         if let currentAdventureID {
             excludedIDs.insert(currentAdventureID)
         }
-        guard let next = topCandidate(excluding: excludedIDs) else { return }
+        guard let next = bestAvailableFilteredAdventure(excluding: excludedIDs) else { return }
         currentAdventureID = next.id
         dailyPickDate = Calendar.current.startOfDay(for: now)
         dailyPickAdventureID = next.id
@@ -180,7 +191,7 @@ final class ContentViewModel: ObservableObject {
             return
         }
 
-        let pick = topCandidate()
+        let pick = bestAvailableFilteredAdventure(excluding: [])
         dailyPickDate = today
         dailyPickAdventureID = pick?.id
         currentAdventureID = pick?.id
@@ -209,6 +220,10 @@ final class ContentViewModel: ObservableObject {
     }
 
     func whyThisText(for adventure: Adventure) -> String {
+        if isWeakBestAvailableMatch(adventure) {
+            return "Best available match for current filters."
+        }
+
         let timeContribution = timeScore(for: adventure) * RecommendationWeights.timeMatch
         let energyContribution = energyScore(for: adventure) * RecommendationWeights.energyMatch
         let weatherContribution = weatherScore(for: adventure) * RecommendationWeights.weatherMatch
@@ -468,26 +483,28 @@ final class ContentViewModel: ObservableObject {
         return (normalized - 0.5) * 0.02
     }
 
-    private func scoredAdventures() -> [(adventure: Adventure, score: Double)] {
-        let scored = eligibleAdventures.map { adventure in
+    private func scoredAdventures(from source: [Adventure], excluding excludedIDs: Set<UUID> = []) -> [(adventure: Adventure, score: Double)] {
+        let scored = source
+            .filter { !excludedIDs.contains($0.id) }
+            .map { adventure in
             (adventure: adventure, score: score(adventure) + dailyJitter(adventure))
         }
         return scored.sorted { $0.score > $1.score }
     }
 
-    private func topCandidate() -> Adventure? {
-        guard let top = scoredAdventures().first, top.score >= RecommendationWeights.pickThreshold else {
-            return nil
+    private func bestAvailableFilteredAdventure(excluding excludedIDs: Set<UUID>) -> Adventure? {
+        let primary = scoredAdventures(from: eligibleAdventures, excluding: excludedIDs)
+        if let bestPrimary = primary.first {
+            return bestPrimary.adventure
         }
-        return top.adventure
+
+        let fallback = scoredAdventures(from: filteredAdventures, excluding: excludedIDs)
+        return fallback.first?.adventure
     }
 
-    private func topCandidate(excluding excludedIDs: Set<UUID>) -> Adventure? {
-        let candidate = scoredAdventures().first { !excludedIDs.contains($0.adventure.id) }
-        guard let candidate, candidate.score >= RecommendationWeights.pickThreshold else {
-            return nil
-        }
-        return candidate.adventure
+    private func isWeakBestAvailableMatch(_ adventure: Adventure) -> Bool {
+        let adventureScore = score(adventure) + dailyJitter(adventure)
+        return adventureScore < RecommendationWeights.pickThreshold
     }
 
     private func markSeen(_ adventure: Adventure) {

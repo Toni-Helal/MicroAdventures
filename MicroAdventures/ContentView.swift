@@ -50,6 +50,18 @@ struct ContentView: View {
         colorScheme == .dark ? Color.white.opacity(0.85) : Color.gray
     }
 
+    private var displayAdventure: Adventure? {
+        viewModel.currentAdventure ?? viewModel.bestAvailableAdventure
+    }
+
+    private var noPickTitle: String {
+        "No adventures match these filters."
+    }
+
+    private var noPickMessage: String {
+        "Try broadening your filters or reset filters."
+    }
+
     var body: some View {
         GeometryReader { proxy in
             let topHeight = proxy.size.height * topSectionHeightFactor
@@ -65,7 +77,7 @@ struct ContentView: View {
             .onAppear {
                 userLocationManager.requestPermissionAndLocation()
                 viewModel.ensureDailyPick(forceReselect: false)
-                if let adventure = viewModel.currentAdventure {
+                if let adventure = displayAdventure {
                     focusOn(adventure)
                 }
             }
@@ -76,7 +88,7 @@ struct ContentView: View {
                 viewModel.refreshTime(date)
             }
             .onChange(of: viewModel.currentAdventureID) { _, _ in
-                if let adventure = viewModel.currentAdventure {
+                if let adventure = displayAdventure {
                     focusOn(adventure)
                 }
             }
@@ -108,7 +120,7 @@ struct ContentView: View {
     private var mapLayer: some View {
         Map(position: $cameraPosition) {
             UserAnnotation()
-            if let adventure = viewModel.currentAdventure {
+            if let adventure = displayAdventure {
                 Annotation(adventure.locationName, coordinate: adventure.coordinate) {
                     Image(systemName: "mappin.circle.fill")
                         .font(.title2)
@@ -128,7 +140,7 @@ struct ContentView: View {
                 onOpenFilters: viewModel.showFilters
             )
 
-            if let adventure = viewModel.currentAdventure {
+            if let adventure = displayAdventure {
                 AdventureCardView(
                     adventure: adventure,
                     whyText: viewModel.whyThisText(for: adventure),
@@ -143,6 +155,8 @@ struct ContentView: View {
             } else {
                 NoPickCardView(
                     cardBackground: cardStyle.cardBackground,
+                    title: noPickTitle,
+                    message: noPickMessage,
                     onResetFilters: {
                         viewModel.resetFilters()
                     }
@@ -206,7 +220,7 @@ struct ContentView: View {
 
         if !didApplyUserLocation {
             didApplyUserLocation = true
-            if let adventure = viewModel.currentAdventure {
+            if let adventure = displayAdventure {
                 focusOn(adventure)
             } else {
                 setCameraOnUser(coordinate)
