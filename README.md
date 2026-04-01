@@ -1,59 +1,53 @@
 # Micro Adventures (SwiftUI MVP)
 
-Micro Adventures is a SwiftUI iOS app that gives one daily micro-adventure suggestion from local sample data.
+Micro Adventures is a local-first SwiftUI iOS app that selects one practical micro-adventure for today.
 
-## What The MVP Does
+## Current MVP Behavior
 
-- Stores one official daily pick locally in `UserDefaults`.
-- `Reroll Today` selects a different eligible adventure, replaces today’s official pick, and persists it.
-- `Done` toggles completion for the current adventure and persists it.
-- Shows the selected adventure on a map, with user location and a center-on-user action.
+- One official daily pick is stored in `UserDefaults`.
+- Recommendation flow is context-aware: time available, energy, weather, time of day, novelty/no-repeat memory, completion penalty, and user distance (when location is available).
+- `Reroll Today` replaces today’s official pick and persists the replacement.
+- `Done` toggles completion state and persists it.
+- If filters still leave candidates, the app falls back to the best available filtered match instead of failing.
+- Empty state is used when active filters truly exclude all adventures.
 
-## Recommendation Logic
+## Filters (Draft + Apply)
 
-Scoring currently uses:
-- available time
-- energy level
-- weather
-- novelty / no-repeat memory
-- completion penalty
-- distance from user location (when location permission is available)
-
-## Filters (Draft Apply Flow)
-
-- Filters open in a sheet with draft values.
-- `Apply` commits the draft to active filters.
+- Filters open as a draft sheet.
+- `Apply` commits draft values.
 - `Close` dismisses without applying draft changes.
 
-## Fallback Behavior
+## Adventure Details (Actionable MVP)
 
-- If the stored daily pick is no longer valid, the app falls back to the best eligible scored match when available.
-- If no candidate clears the score threshold, an empty state is shown.
-- If active filters exclude all adventures, the empty state explains that and suggests loosening filters.
+- Tapping the current adventure card opens a detail screen.
+- Detail shows: title, description, effort, estimated duration, estimated distance, start point, end point, highlights, and quick tips.
+- Detail map shows start/end markers and a lightweight line between points when start and end differ.
+- `Start Adventure` opens native Apple Maps with a walking intent (start → end when available, otherwise to start point).
+- `Open in Maps` opens the adventure start point in Apple Maps.
 
 ## MVP Sample Region
 
-Seeded adventures are centered around **Colombes, France (92700)**.
+Seed adventures are centered around **Colombes, France (92700)**.
 
 ## Project Structure
 
-- `MicroAdventures/ContentView.swift` — screen composition, map camera behavior, sheet wiring.
-- `MicroAdventures/ContentViewModel.swift` — scoring, daily pick lifecycle, persistence, filter application.
-- `MicroAdventures/AdventureCardView.swift` — main card UI (`Why this?`, `Reroll Today`, `Done`).
-- `MicroAdventures/AdventureFiltersView.swift` — draft filter sheet UI (`Apply` / `Close`).
+- `MicroAdventures/ContentView.swift` — main screen composition, map camera, sheets.
+- `MicroAdventures/ContentViewModel.swift` — scoring, daily pick lifecycle, persistence, fallback behavior.
+- `MicroAdventures/AdventureCardView.swift` — current pick card (`Why this?`, `Reroll Today`, `Done`, tap-to-detail).
+- `MicroAdventures/AdventureDetailView.swift` — actionable detail view and Apple Maps handoff.
+- `MicroAdventures/AdventureFiltersView.swift` — draft filter UI (`Apply` / `Close`).
+- `MicroAdventures/NoPickCardView.swift` — no-match state when filters remove all options.
+- `MicroAdventures/Adventure.swift` — model + seeded MVP adventures.
 - `MicroAdventures/UserLocationManager.swift` — Core Location integration.
-- `MicroAdventures/NoPickCardView.swift` — empty-state card.
-- `MicroAdventures/Adventure.swift` — domain model and seeded sample data.
 
 ## Run Locally
 
 1. Open `MicroAdventures.xcodeproj` in Xcode.
 2. Run scheme `MicroAdventures` on simulator or device.
-3. Grant location permission to enable distance-aware scoring.
+3. Allow location permission to enable distance-aware scoring.
 
-## Current MVP Scope
+## Scope Limits
 
-- Local-only (no backend, auth, or cloud sync)
-- Sample-data driven (no remote CMS/feed)
-- No social features
-- No Strava integration
+- Local-only persistence (`UserDefaults`)
+- Seed/sample adventure dataset (no backend feed)
+- No in-app turn-by-turn navigation engine (uses Apple Maps handoff)
