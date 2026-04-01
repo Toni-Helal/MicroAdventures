@@ -60,6 +60,13 @@ struct Adventure: Identifiable, Hashable, Codable, Sendable {
     var durationMinutes: Int
     var startPointName: String
     var endPointName: String
+    var startLatitude: Double
+    var startLongitude: Double
+    var endLatitude: Double
+    var endLongitude: Double
+    var estimatedDistanceKm: Double
+    var highlights: [String]
+    var tips: [String]
     var locationName: String
     var latitude: Double
     var longitude: Double
@@ -69,6 +76,22 @@ struct Adventure: Identifiable, Hashable, Codable, Sendable {
 
     var coordinate: CLLocationCoordinate2D {
         CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+    }
+
+    var startName: String { startPointName }
+    var endName: String { endPointName }
+    var estimatedDurationMinutes: Int { durationMinutes }
+
+    var startCoordinate: CLLocationCoordinate2D {
+        CLLocationCoordinate2D(latitude: startLatitude, longitude: startLongitude)
+    }
+
+    var endCoordinate: CLLocationCoordinate2D {
+        CLLocationCoordinate2D(latitude: endLatitude, longitude: endLongitude)
+    }
+
+    var hasDistinctEndpoints: Bool {
+        abs(startLatitude - endLatitude) > 0.0001 || abs(startLongitude - endLongitude) > 0.0001
     }
 }
 
@@ -88,6 +111,13 @@ struct AdventureSamples {
             durationMinutes: 30,
             startPointName: "Panama Park Entrance",
             endPointName: "Panama Park Entrance",
+            startLatitude: 48.9304,
+            startLongitude: 2.2327,
+            endLatitude: 48.9304,
+            endLongitude: 2.2327,
+            estimatedDistanceKm: 2.0,
+            highlights: ["Quiet riverside loop", "Golden-hour views over the Seine"],
+            tips: ["Wear comfortable shoes", "Bring a light layer for evening wind"],
             locationName: "Apple Park Hill",
             latitude: 48.9304,
             longitude: 2.2327,
@@ -106,6 +136,13 @@ struct AdventureSamples {
             durationMinutes: 45,
             startPointName: "Main Street Bridge",
             endPointName: "Creekside Kiosk",
+            startLatitude: 48.9238,
+            startLongitude: 2.2468,
+            endLatitude: 48.9264,
+            endLongitude: 2.2412,
+            estimatedDistanceKm: 3.4,
+            highlights: ["Coffee stop midpoint", "Easy riverbank rhythm"],
+            tips: ["Take water if it is warm", "Set a turnaround timer at 20 minutes"],
             locationName: "Creekside Kiosk",
             latitude: 48.9238,
             longitude: 2.2468,
@@ -124,6 +161,13 @@ struct AdventureSamples {
             durationMinutes: 60,
             startPointName: "Neighborhood Park Gate",
             endPointName: "Neighborhood Park Gate",
+            startLatitude: 48.9189,
+            startLongitude: 2.2521,
+            endLatitude: 48.9189,
+            endLongitude: 2.2521,
+            estimatedDistanceKm: 2.6,
+            highlights: ["Low-noise night walk", "Open sky viewpoints"],
+            tips: ["Wear reflective clothing", "Keep phone battery above 20%"],
             locationName: "Neighborhood Park",
             latitude: 48.9189,
             longitude: 2.2521,
@@ -142,6 +186,13 @@ struct AdventureSamples {
             durationMinutes: 12,
             startPointName: "Home",
             endPointName: "Home",
+            startLatitude: 48.9281,
+            startLongitude: 2.2685,
+            endLatitude: 48.9281,
+            endLongitude: 2.2685,
+            estimatedDistanceKm: 0.8,
+            highlights: ["Quick morning reset", "Very low friction start"],
+            tips: ["Keep the route short", "Use a 12-minute timer"],
             locationName: "Home Entry",
             latitude: 48.9281,
             longitude: 2.2685,
@@ -160,6 +211,13 @@ struct AdventureSamples {
             durationMinutes: 20,
             startPointName: "Calabazas Park Entrance",
             endPointName: "Calabazas Park Entrance",
+            startLatitude: 48.9034,
+            startLongitude: 2.2415,
+            endLatitude: 48.9034,
+            endLongitude: 2.2415,
+            estimatedDistanceKm: 1.7,
+            highlights: ["Three-photo challenge", "Morning light scouting"],
+            tips: ["Start with camera ready", "Stop after the third photo"],
             locationName: "Calabazas Creek Loop",
             latitude: 48.9034,
             longitude: 2.2415,
@@ -178,6 +236,13 @@ struct AdventureSamples {
             durationMinutes: 25,
             startPointName: "Main Street Transit Stop",
             endPointName: "Library Arcade Exit",
+            startLatitude: 48.9235,
+            startLongitude: 2.2529,
+            endLatitude: 48.9251,
+            endLongitude: 2.2546,
+            estimatedDistanceKm: 1.9,
+            highlights: ["Sheltered path for rainy weather", "Detail-spotting micro challenge"],
+            tips: ["Take a small umbrella", "Use covered passages only"],
             locationName: "Downtown Cupertino Sheltered Walk",
             latitude: 48.9235,
             longitude: 2.2529,
@@ -196,6 +261,13 @@ struct AdventureSamples {
             durationMinutes: 22,
             startPointName: "Monta Vista Park Steps",
             endPointName: "Monta Vista Park Steps",
+            startLatitude: 48.8919,
+            startLongitude: 2.2370,
+            endLatitude: 48.8919,
+            endLongitude: 2.2370,
+            estimatedDistanceKm: 2.2,
+            highlights: ["Short high-intensity circuit", "Clear round-based structure"],
+            tips: ["Warm up for 2 minutes first", "Keep one round in reserve if tired"],
             locationName: "Monta Vista Stair Loop",
             latitude: 48.8919,
             longitude: 2.2370,
@@ -218,6 +290,13 @@ extension Adventure {
         case durationMinutes
         case startPointName
         case endPointName
+        case startLatitude
+        case startLongitude
+        case endLatitude
+        case endLongitude
+        case estimatedDistanceKm
+        case highlights
+        case tips
         case locationName
         case latitude
         case longitude
@@ -237,12 +316,36 @@ extension Adventure {
         effort = try container.decode(Effort.self, forKey: .effort)
         recommendedEnergy = try container.decodeIfPresent(EnergyLevel.self, forKey: .recommendedEnergy) ?? .medium
         bestTimeWindow = try container.decodeIfPresent(BestTimeWindow.self, forKey: .bestTimeWindow) ?? .evening
-        durationMinutes = try container.decode(Int.self, forKey: .durationMinutes)
-        locationName = try container.decode(String.self, forKey: .locationName)
-        startPointName = try container.decodeIfPresent(String.self, forKey: .startPointName) ?? locationName
-        endPointName = try container.decodeIfPresent(String.self, forKey: .endPointName) ?? locationName
-        latitude = try container.decode(Double.self, forKey: .latitude)
-        longitude = try container.decode(Double.self, forKey: .longitude)
+        let decodedDurationMinutes = try container.decode(Int.self, forKey: .durationMinutes)
+        durationMinutes = decodedDurationMinutes
+        let decodedLocationName = try container.decode(String.self, forKey: .locationName)
+        locationName = decodedLocationName
+        startPointName = try container.decodeIfPresent(String.self, forKey: .startPointName) ?? decodedLocationName
+        endPointName = try container.decodeIfPresent(String.self, forKey: .endPointName) ?? decodedLocationName
+        let decodedLatitude = try container.decode(Double.self, forKey: .latitude)
+        let decodedLongitude = try container.decode(Double.self, forKey: .longitude)
+        latitude = decodedLatitude
+        longitude = decodedLongitude
+        let decodedStartLatitude = try container.decodeIfPresent(Double.self, forKey: .startLatitude) ?? decodedLatitude
+        let decodedStartLongitude = try container.decodeIfPresent(Double.self, forKey: .startLongitude) ?? decodedLongitude
+        let decodedEndLatitude = try container.decodeIfPresent(Double.self, forKey: .endLatitude) ?? decodedLatitude
+        let decodedEndLongitude = try container.decodeIfPresent(Double.self, forKey: .endLongitude) ?? decodedLongitude
+        startLatitude = decodedStartLatitude
+        startLongitude = decodedStartLongitude
+        endLatitude = decodedEndLatitude
+        endLongitude = decodedEndLongitude
+        highlights = try container.decodeIfPresent([String].self, forKey: .highlights) ?? []
+        tips = try container.decodeIfPresent([String].self, forKey: .tips) ?? []
+        let fallbackDistanceKm = {
+            let start = CLLocation(latitude: decodedStartLatitude, longitude: decodedStartLongitude)
+            let end = CLLocation(latitude: decodedEndLatitude, longitude: decodedEndLongitude)
+            let linearDistance = start.distance(from: end) / 1000
+            if linearDistance >= 0.2 {
+                return linearDistance
+            }
+            return max(0.8, Double(decodedDurationMinutes) * 0.06)
+        }()
+        estimatedDistanceKm = try container.decodeIfPresent(Double.self, forKey: .estimatedDistanceKm) ?? fallbackDistanceKm
         isCompleted = try container.decodeIfPresent(Bool.self, forKey: .isCompleted) ?? false
         lastShownAt = try container.decodeIfPresent(Date.self, forKey: .lastShownAt)
         lastCompletedAt = try container.decodeIfPresent(Date.self, forKey: .lastCompletedAt)
@@ -262,6 +365,13 @@ extension Adventure {
         try container.encode(durationMinutes, forKey: .durationMinutes)
         try container.encode(startPointName, forKey: .startPointName)
         try container.encode(endPointName, forKey: .endPointName)
+        try container.encode(startLatitude, forKey: .startLatitude)
+        try container.encode(startLongitude, forKey: .startLongitude)
+        try container.encode(endLatitude, forKey: .endLatitude)
+        try container.encode(endLongitude, forKey: .endLongitude)
+        try container.encode(estimatedDistanceKm, forKey: .estimatedDistanceKm)
+        try container.encode(highlights, forKey: .highlights)
+        try container.encode(tips, forKey: .tips)
         try container.encode(locationName, forKey: .locationName)
         try container.encode(latitude, forKey: .latitude)
         try container.encode(longitude, forKey: .longitude)
