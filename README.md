@@ -9,7 +9,13 @@ Micro Adventures is a local-first SwiftUI iOS app that selects one practical mic
 - `Reroll Today` replaces today’s official pick and persists the replacement.
 - `Done` toggles completion state and persists it.
 - If filters still leave candidates, the app falls back to the best available filtered match instead of failing.
-- Empty state is used when active filters truly exclude all adventures.
+- Empty state appears only when active filters reduce the candidate set to zero adventures.
+
+## Known Limitations
+
+- Adventure data is seed/sample data for the Colombes MVP region.
+- Route visualization is lightweight and not a full navigation path.
+- Recommendation quality depends on the small local dataset and current filter combinations.
 
 ## Filters (Draft + Apply)
 
@@ -51,3 +57,8 @@ Seed adventures are centered around **Colombes, France (92700)**.
 - Local-only persistence (`UserDefaults`)
 - Seed/sample adventure dataset (no backend feed)
 - No in-app turn-by-turn navigation engine (uses Apple Maps handoff)
+
+## Core UX Principle
+
+Micro Adventures is designed to reduce decision friction.
+The app should help the user move from “I have some free time” to a realistic local activity with minimal browsing.
