@@ -50,22 +50,16 @@ struct ContentView: View {
         colorScheme == .dark ? Color.white.opacity(0.85) : Color.gray
     }
 
-    private var filtersExcludeAllAdventures: Bool {
-        !viewModel.adventures.contains { adventure in
-            viewModel.selectedCategories.contains(adventure.category)
-                && viewModel.selectedEfforts.contains(adventure.effort)
-        }
+    private var displayAdventure: Adventure? {
+        viewModel.currentAdventure ?? viewModel.bestAvailableAdventure
     }
 
     private var noPickTitle: String {
-        filtersExcludeAllAdventures ? "No matching adventures." : "No pick for today."
+        "No adventures match these filters."
     }
 
     private var noPickMessage: String {
-        if filtersExcludeAllAdventures {
-            return "Current filters exclude all matches. Try loosening them."
-        }
-        return "No recommendation fits right now. Try loosening filters."
+        "Try broadening your filters or reset filters."
     }
 
     var body: some View {
@@ -83,7 +77,7 @@ struct ContentView: View {
             .onAppear {
                 userLocationManager.requestPermissionAndLocation()
                 viewModel.ensureDailyPick(forceReselect: false)
-                if let adventure = viewModel.currentAdventure {
+                if let adventure = displayAdventure {
                     focusOn(adventure)
                 }
             }
@@ -94,7 +88,7 @@ struct ContentView: View {
                 viewModel.refreshTime(date)
             }
             .onChange(of: viewModel.currentAdventureID) { _, _ in
-                if let adventure = viewModel.currentAdventure {
+                if let adventure = displayAdventure {
                     focusOn(adventure)
                 }
             }
@@ -126,7 +120,7 @@ struct ContentView: View {
     private var mapLayer: some View {
         Map(position: $cameraPosition) {
             UserAnnotation()
-            if let adventure = viewModel.currentAdventure {
+            if let adventure = displayAdventure {
                 Annotation(adventure.locationName, coordinate: adventure.coordinate) {
                     Image(systemName: "mappin.circle.fill")
                         .font(.title2)
@@ -146,7 +140,7 @@ struct ContentView: View {
                 onOpenFilters: viewModel.showFilters
             )
 
-            if let adventure = viewModel.currentAdventure {
+            if let adventure = displayAdventure {
                 AdventureCardView(
                     adventure: adventure,
                     whyText: viewModel.whyThisText(for: adventure),
@@ -226,7 +220,7 @@ struct ContentView: View {
 
         if !didApplyUserLocation {
             didApplyUserLocation = true
-            if let adventure = viewModel.currentAdventure {
+            if let adventure = displayAdventure {
                 focusOn(adventure)
             } else {
                 setCameraOnUser(coordinate)

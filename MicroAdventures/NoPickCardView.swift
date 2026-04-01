@@ -16,7 +16,7 @@ struct NoPickCardView: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
 
-            Button("Reset Filters") {
+            Button("Reset Some Filters") {
                 onResetFilters()
             }
             .buttonStyle(.bordered)
