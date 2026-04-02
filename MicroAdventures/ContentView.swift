@@ -55,12 +55,18 @@ struct ContentView: View {
         viewModel.currentAdventure ?? viewModel.bestAvailableAdventure
     }
 
+    private var isDatasetEmpty: Bool {
+        viewModel.adventures.isEmpty
+    }
+
     private var noPickTitle: String {
-        "No adventures match these filters."
+        isDatasetEmpty ? "No adventures yet." : "Nothing matched right now."
     }
 
     private var noPickMessage: String {
-        "Try broadening your filters or reset filters."
+        isDatasetEmpty
+            ? "No adventure data is available."
+            : "Your filters may be too narrow. Try resetting them."
     }
 
     var body: some View {
@@ -147,7 +153,7 @@ struct ContentView: View {
             if let adventure = displayAdventure {
                 AdventureCardView(
                     adventure: adventure,
-                    whyText: viewModel.whyThisText(for: adventure),
+                    whyText: viewModel.whyThisText(for: adventure, tier: viewModel.currentTier ?? .bestAvailable),
                     style: cardStyle,
                     onOpenDetails: {
                         detailAdventure = adventure
@@ -164,6 +170,7 @@ struct ContentView: View {
                     cardBackground: cardStyle.cardBackground,
                     title: noPickTitle,
                     message: noPickMessage,
+                    showResetButton: !isDatasetEmpty,
                     onResetFilters: {
                         viewModel.resetFilters()
                     }
