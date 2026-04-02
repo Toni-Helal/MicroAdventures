@@ -4,6 +4,7 @@ struct NoPickCardView: View {
     let cardBackground: Color
     let title: String
     let message: String
+    var showResetButton: Bool = true
     let onResetFilters: () -> Void
 
     var body: some View {
@@ -16,10 +17,12 @@ struct NoPickCardView: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
 
-            Button("Reset Some Filters") {
-                onResetFilters()
+            if showResetButton {
+                Button("Reset Some Filters") {
+                    onResetFilters()
+                }
+                .buttonStyle(.bordered)
             }
-            .buttonStyle(.bordered)
         }
         .padding(14)
         .background(cardBackground, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
