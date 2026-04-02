@@ -99,15 +99,7 @@ final class ContentViewModel: ObservableObject {
 
     var currentAdventure: Adventure? {
         guard !adventures.isEmpty else { return nil }
-
-        if let id = currentAdventureID,
-           let match = adventures.first(where: { $0.id == id }),
-           selectedCategories.contains(match.category),
-           selectedEfforts.contains(match.effort) {
-            return match
-        }
-
-        return selectAdventure(excluding: [])?.adventure
+        return adventures.first(where: { $0.id == currentAdventureID })
     }
 
     func showFilters() {
