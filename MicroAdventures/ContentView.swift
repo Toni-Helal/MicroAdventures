@@ -55,18 +55,12 @@ struct ContentView: View {
         viewModel.currentAdventure ?? viewModel.bestAvailableAdventure
     }
 
-    private var isDatasetEmpty: Bool {
-        viewModel.adventures.isEmpty
-    }
-
     private var noPickTitle: String {
-        isDatasetEmpty ? "No adventures yet." : "Nothing matched right now."
+        "No adventures available yet."
     }
 
     private var noPickMessage: String {
-        isDatasetEmpty
-            ? "No adventure data is available."
-            : "Your filters may be too narrow. Try resetting them."
+        "Add adventure data to get recommendations."
     }
 
     var body: some View {
@@ -169,11 +163,7 @@ struct ContentView: View {
                 NoPickCardView(
                     cardBackground: cardStyle.cardBackground,
                     title: noPickTitle,
-                    message: noPickMessage,
-                    showResetButton: !isDatasetEmpty,
-                    onResetFilters: {
-                        viewModel.resetFilters()
-                    }
+                    message: noPickMessage
                 )
                 .padding(.horizontal)
                 .padding(.top, 34)
