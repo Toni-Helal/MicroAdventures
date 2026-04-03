@@ -59,6 +59,7 @@ final class ContentViewModel: ObservableObject {
 
     private var dailyPickDate: Date?
     private var dailyPickAdventureID: UUID?
+    private var dailyPickLocationAwareDate: Date?
     private var now: Date = Date()
     private var daySeedValue: Int = Calendar.current.ordinality(of: .day, in: .year, for: Date()) ?? 0
     private var isBootstrapping = true
@@ -69,6 +70,7 @@ final class ContentViewModel: ObservableObject {
     private static let storageKey = "micro_adventures_store_v1"
     private static let dailyPickDateKey = "micro_adventures_daily_pick_date_v1"
     private static let dailyPickIdKey = "micro_adventures_daily_pick_id_v1"
+    private static let dailyPickLocationAwareDateKey = "micro_adventures_daily_pick_location_aware_date_v1"
 
     init() {
         let initialAdventures = Self.loadStoredAdventures()
@@ -77,6 +79,7 @@ final class ContentViewModel: ObservableObject {
         let storedPick = Self.loadStoredDailyPick()
         dailyPickDate = storedPick.date
         dailyPickAdventureID = storedPick.id
+        dailyPickLocationAwareDate = storedPick.locationAwareDate
 
         let today = Calendar.current.startOfDay(for: Date())
         currentAdventureID = storedPick.date.flatMap {
@@ -142,6 +145,7 @@ final class ContentViewModel: ObservableObject {
         currentTier = result.tier
         dailyPickDate = Calendar.current.startOfDay(for: now)
         dailyPickAdventureID = result.adventure.id
+        dailyPickLocationAwareDate = userCoordinate != nil ? dailyPickDate : nil
         markSeen(result.adventure)
         persistAdventures()
         persistDailyPick()
@@ -156,6 +160,7 @@ final class ContentViewModel: ObservableObject {
             }
         }
         userCoordinate = coordinate
+        applyLocationAwareDailyPickIfNeeded()
     }
 
     func refreshTime(_ date: Date) {
@@ -199,6 +204,7 @@ final class ContentViewModel: ObservableObject {
         let result = selectAdventure(excluding: [])
         dailyPickDate = today
         dailyPickAdventureID = result?.adventure.id
+        dailyPickLocationAwareDate = (result != nil && userCoordinate != nil) ? today : nil
         currentAdventureID = result?.adventure.id
         currentTier = result?.tier
         if let adventure = result?.adventure {
@@ -538,6 +544,26 @@ final class ContentViewModel: ObservableObject {
         adventures[index].lastShownAt = now
     }
 
+    private func applyLocationAwareDailyPickIfNeeded() {
+        guard userCoordinate != nil else { return }
+
+        let today = Calendar.current.startOfDay(for: Date())
+        let hasTodayPick = dailyPickDate.map { Calendar.current.isDate($0, inSameDayAs: today) } ?? false
+        guard hasTodayPick, dailyPickAdventureID != nil else { return }
+
+        let isAlreadyLocationAware = dailyPickLocationAwareDate.map {
+            Calendar.current.isDate($0, inSameDayAs: today)
+        } ?? false
+        guard !isAlreadyLocationAware else { return }
+
+        if showingFilters {
+            hasDeferredDailyReselect = true
+            return
+        }
+
+        ensureDailyPick(forceReselect: true)
+    }
+
     private func persistAdventures() {
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
@@ -558,14 +584,22 @@ final class ContentViewModel: ObservableObject {
         } else {
             defaults.removeObject(forKey: Self.dailyPickIdKey)
         }
+
+        if let locationAwareDate = dailyPickLocationAwareDate {
+            defaults.set(locationAwareDate.timeIntervalSince1970, forKey: Self.dailyPickLocationAwareDateKey)
+        } else {
+            defaults.removeObject(forKey: Self.dailyPickLocationAwareDateKey)
+        }
     }
 
-    private static func loadStoredDailyPick() -> (date: Date?, id: UUID?) {
+    private static func loadStoredDailyPick() -> (date: Date?, id: UUID?, locationAwareDate: Date?) {
         let defaults = UserDefaults.standard
-        let timestamp = defaults.double(forKey: dailyPickDateKey)
-        let date = timestamp > 0 ? Date(timeIntervalSince1970: timestamp) : nil
+        let dailyPickTimestamp = defaults.double(forKey: dailyPickDateKey)
+        let date = dailyPickTimestamp > 0 ? Date(timeIntervalSince1970: dailyPickTimestamp) : nil
         let id = defaults.string(forKey: dailyPickIdKey).flatMap { UUID(uuidString: $0) }
-        return (date, id)
+        let locationAwareTimestamp = defaults.double(forKey: dailyPickLocationAwareDateKey)
+        let locationAwareDate = locationAwareTimestamp > 0 ? Date(timeIntervalSince1970: locationAwareTimestamp) : nil
+        return (date, id, locationAwareDate)
     }
 
     private static func loadStoredAdventures() -> [Adventure] {
