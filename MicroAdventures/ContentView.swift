@@ -143,12 +143,28 @@ struct ContentView: View {
     private var mapLayer: some View {
         Map(position: $cameraPosition) {
             UserAnnotation()
-            if let adventure = viewModel.currentAdventure {
-                Annotation(adventure.locationName, coordinate: adventure.coordinate) {
-                    Image(systemName: "mappin.circle.fill")
-                        .font(.title2)
-                        .foregroundStyle(pinColor)
-                        .shadow(radius: 2)
+            if let adventure = displayedAdventure {
+                if adventure.hasDistinctEndpoints {
+                    Annotation(adventure.startPointName, coordinate: adventure.startCoordinate) {
+                        Image(systemName: "mappin.circle.fill")
+                            .font(.title2)
+                            .foregroundStyle(.green)
+                            .shadow(radius: 2)
+                    }
+
+                    Annotation(adventure.endPointName, coordinate: adventure.endCoordinate) {
+                        Image(systemName: "flag.circle.fill")
+                            .font(.title2)
+                            .foregroundStyle(.red)
+                            .shadow(radius: 2)
+                    }
+                } else {
+                    Annotation(adventure.locationName, coordinate: adventure.coordinate) {
+                        Image(systemName: "mappin.circle.fill")
+                            .font(.title2)
+                            .foregroundStyle(pinColor)
+                            .shadow(radius: 2)
+                    }
                 }
             }
         }
@@ -168,6 +184,7 @@ struct ContentView: View {
                 AdventureCardView(
                     adventure: adventure,
                     whyText: viewModel.whyThisText(for: adventure),
+                    distanceText: viewModel.distanceText(for: adventure),
                     style: cardStyle,
                     onAnotherPick: {
                         dismissCompletionCelebration()
@@ -200,30 +217,46 @@ struct ContentView: View {
     }
 
     private func focusOn(_ adventure: Adventure) {
+        var coordinates: [CLLocationCoordinate2D] = adventure.hasDistinctEndpoints
+            ? [adventure.startCoordinate, adventure.endCoordinate]
+            : [adventure.coordinate]
+
         if let userCoordinate = userLocationManager.coordinate {
-            let center = CLLocationCoordinate2D(
-                latitude: (userCoordinate.latitude + adventure.latitude) / 2,
-                longitude: (userCoordinate.longitude + adventure.longitude) / 2
-            )
-            let latitudeDelta = max(abs(userCoordinate.latitude - adventure.latitude) * 2.2, 0.02)
-            let longitudeDelta = max(abs(userCoordinate.longitude - adventure.longitude) * 2.2, 0.02)
-            cameraPosition = .region(MKCoordinateRegion(
-                center: center,
-                span: MKCoordinateSpan(latitudeDelta: latitudeDelta, longitudeDelta: longitudeDelta)
-            ))
-            return
+            coordinates.insert(userCoordinate, at: 0)
         }
 
-        cameraPosition = .region(MKCoordinateRegion(
-            center: adventure.coordinate,
-            span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)
-        ))
+        setCameraToFit(coordinates)
     }
 
     private func setCameraOnUser(_ coordinate: CLLocationCoordinate2D) {
         cameraPosition = .region(MKCoordinateRegion(
             center: coordinate,
             span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)
+        ))
+    }
+
+    private func setCameraToFit(_ coordinates: [CLLocationCoordinate2D]) {
+        guard let first = coordinates.first else { return }
+
+        let latitudes = coordinates.map(\.latitude)
+        let longitudes = coordinates.map(\.longitude)
+
+        let minLatitude = latitudes.min() ?? first.latitude
+        let maxLatitude = latitudes.max() ?? first.latitude
+        let minLongitude = longitudes.min() ?? first.longitude
+        let maxLongitude = longitudes.max() ?? first.longitude
+
+        let center = CLLocationCoordinate2D(
+            latitude: (minLatitude + maxLatitude) / 2,
+            longitude: (minLongitude + maxLongitude) / 2
+        )
+
+        let latitudeDelta = max((maxLatitude - minLatitude) * 1.8, 0.02)
+        let longitudeDelta = max((maxLongitude - minLongitude) * 1.8, 0.02)
+
+        cameraPosition = .region(MKCoordinateRegion(
+            center: center,
+            span: MKCoordinateSpan(latitudeDelta: latitudeDelta, longitudeDelta: longitudeDelta)
         ))
     }
 

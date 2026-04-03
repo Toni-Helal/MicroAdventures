@@ -64,7 +64,8 @@ final class ContentViewModel: ObservableObject {
     private static let filtersDurationKey = "micro_adventures_filters_duration_v1"
 
     init() {
-        let initialAdventures = Self.loadStoredAdventures()
+        let baseAdventures = AdventureRepository.loadAdventures()
+        let initialAdventures = Self.loadStoredAdventures(baseAdventures: baseAdventures)
         adventures = initialAdventures
 
         let storedFilters = Self.loadStoredFilters()
@@ -103,6 +104,13 @@ final class ContentViewModel: ObservableObject {
         let removedCategories = max(0, Category.allCases.count - selectedCategories.count)
         let removedEfforts = max(0, Effort.allCases.count - selectedEfforts.count)
         return removedCategories + removedEfforts
+    }
+
+    func distanceText(for adventure: Adventure) -> String {
+        if let distance = distanceInKilometers(to: adventure) {
+            return String(format: "%.1f km away", distance)
+        }
+        return String(format: "%.1f km", adventure.estimatedDistanceKm)
     }
 
     var currentStreak: Int {
@@ -485,7 +493,10 @@ final class ContentViewModel: ObservableObject {
     private func distanceInKilometers(to adventure: Adventure) -> Double? {
         guard let userCoordinate else { return nil }
         let userLocation = CLLocation(latitude: userCoordinate.latitude, longitude: userCoordinate.longitude)
-        let destination = CLLocation(latitude: adventure.latitude, longitude: adventure.longitude)
+        let destination = CLLocation(
+            latitude: adventure.startCoordinate.latitude,
+            longitude: adventure.startCoordinate.longitude
+        )
         return userLocation.distance(from: destination) / 1000
     }
 
@@ -644,51 +655,56 @@ final class ContentViewModel: ObservableObject {
         return (date, id)
     }
 
-    private static func loadStoredAdventures() -> [Adventure] {
+    private static func loadStoredAdventures(baseAdventures: [Adventure]) -> [Adventure] {
         let defaults = UserDefaults.standard
-        guard let data = defaults.data(forKey: storageKey) else { return AdventureSamples.all }
+        guard let data = defaults.data(forKey: storageKey) else { return baseAdventures }
 
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
         guard let stored = try? decoder.decode([Adventure].self, from: data) else {
-            return AdventureSamples.all
+            return baseAdventures
         }
-        return mergeSamples(with: stored)
+        return mergeBaseAdventures(baseAdventures, with: stored)
     }
 
-    private static func mergeSamples(with stored: [Adventure]) -> [Adventure] {
-        let storedById = Dictionary(uniqueKeysWithValues: stored.map { ($0.id, $0) })
+    private static func mergeBaseAdventures(_ baseAdventures: [Adventure], with stored: [Adventure]) -> [Adventure] {
+        let validStored = stored.filter(\.isCoordinateValid)
+        let storedById = Dictionary(uniqueKeysWithValues: validStored.map { ($0.id, $0) })
         let storedIds = Set(storedById.keys)
-        let sampleIds = Set(AdventureSamples.all.map { $0.id })
+        let baseIds = Set(baseAdventures.map { $0.id })
 
-        if storedIds.intersection(sampleIds).isEmpty {
-            return AdventureSamples.all
+        if storedIds.intersection(baseIds).isEmpty {
+            return baseAdventures
         }
 
         var merged: [Adventure] = []
-        for sample in AdventureSamples.all {
-            if var existing = storedById[sample.id] {
-                existing.title = sample.title
-                existing.description = sample.description
-                existing.decisionTags = sample.decisionTags
-                existing.flavorTags = sample.flavorTags
-                existing.category = sample.category
-                existing.effort = sample.effort
-                existing.recommendedEnergy = sample.recommendedEnergy
-                existing.bestTimeWindow = sample.bestTimeWindow
-                existing.durationMinutes = sample.durationMinutes
-                existing.startPointName = sample.startPointName
-                existing.endPointName = sample.endPointName
-                existing.locationName = sample.locationName
-                existing.latitude = sample.latitude
-                existing.longitude = sample.longitude
+        for baseAdventure in baseAdventures {
+            if var existing = storedById[baseAdventure.id] {
+                existing.title = baseAdventure.title
+                existing.description = baseAdventure.description
+                existing.decisionTags = baseAdventure.decisionTags
+                existing.flavorTags = baseAdventure.flavorTags
+                existing.category = baseAdventure.category
+                existing.effort = baseAdventure.effort
+                existing.recommendedEnergy = baseAdventure.recommendedEnergy
+                existing.bestTimeWindow = baseAdventure.bestTimeWindow
+                existing.durationMinutes = baseAdventure.durationMinutes
+                existing.startPointName = baseAdventure.startPointName
+                existing.endPointName = baseAdventure.endPointName
+                existing.locationName = baseAdventure.locationName
+                existing.latitude = baseAdventure.latitude
+                existing.longitude = baseAdventure.longitude
+                existing.startLatitude = baseAdventure.startLatitude
+                existing.startLongitude = baseAdventure.startLongitude
+                existing.endLatitude = baseAdventure.endLatitude
+                existing.endLongitude = baseAdventure.endLongitude
                 merged.append(existing)
             } else {
-                merged.append(sample)
+                merged.append(baseAdventure)
             }
         }
 
-        for extra in stored where !sampleIds.contains(extra.id) {
+        for extra in validStored where !baseIds.contains(extra.id) {
             merged.append(extra)
         }
 

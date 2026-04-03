@@ -9,8 +9,11 @@ struct AdventureCardStyle {
 }
 
 struct AdventureCardView: View {
+    @Environment(\.openURL) private var openURL
+
     let adventure: Adventure
     let whyText: String
+    let distanceText: String
     let style: AdventureCardStyle
     let onAnotherPick: () -> Void
     let onToggleCompleted: () -> Void
@@ -21,6 +24,7 @@ struct AdventureCardView: View {
                 infoChip(title: adventure.category.rawValue, systemIcon: adventure.category.systemIcon)
 
                 infoChip(title: adventure.effort.rawValue)
+                infoChip(title: distanceText)
             }
 
             Text(adventure.title)
@@ -58,7 +62,28 @@ struct AdventureCardView: View {
             VStack(alignment: .leading, spacing: 4) {
                 AdventureInfoRow(icon: "bolt.fill", text: "Energy: \(adventure.recommendedEnergy.rawValue)")
                 AdventureInfoRow(icon: "clock", text: "Best time: \(adventure.bestTimeWindow.rawValue)")
-                AdventureInfoRow(icon: "flag", text: "Start: \(adventure.startPointName)")
+                HStack(spacing: 8) {
+                    Image(systemName: "flag")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Text("Start: \(adventure.startPointName)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    if let mapsURL = adventure.openInMapsURL {
+                        Button {
+                            openURL(mapsURL)
+                        } label: {
+                            Image(systemName: "map.fill")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                                .padding(6)
+                                .background(Color.secondary.opacity(0.12), in: Circle())
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("Open start point in Maps")
+                    }
+                }
                 AdventureInfoRow(icon: "flag.checkered", text: "End: \(adventure.endPointName)")
             }
 
