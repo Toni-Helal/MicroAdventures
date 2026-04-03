@@ -18,19 +18,9 @@ struct AdventureCardView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 8) {
-                Text(adventure.category.rawValue)
-                    .font(.caption)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 6)
-                    .background(style.chipBackground)
-                    .clipShape(Capsule())
+                infoChip(title: adventure.category.rawValue, systemIcon: adventure.category.systemIcon)
 
-                Text(adventure.effort.rawValue)
-                    .font(.caption)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 6)
-                    .background(style.chipBackground)
-                    .clipShape(Capsule())
+                infoChip(title: adventure.effort.rawValue)
             }
 
             Text(adventure.title)
@@ -48,6 +38,22 @@ struct AdventureCardView: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .lineLimit(3)
+
+            if !adventure.flavorTags.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 6) {
+                        ForEach(Array(adventure.flavorTags.prefix(3)), id: \.self) { tag in
+                            Text(tag)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 6)
+                                .background(Color.secondary.opacity(0.14))
+                                .clipShape(Capsule())
+                        }
+                    }
+                }
+            }
 
             VStack(alignment: .leading, spacing: 4) {
                 AdventureInfoRow(icon: "bolt.fill", text: "Energy: \(adventure.recommendedEnergy.rawValue)")
@@ -97,6 +103,22 @@ struct AdventureCardView: View {
         .padding(14)
         .background(style.cardBackground, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
         .shadow(color: .black.opacity(0.1), radius: 8, y: 4)
+    }
+
+    @ViewBuilder
+    private func infoChip(title: String, systemIcon: String? = nil) -> some View {
+        HStack(spacing: 6) {
+            if let systemIcon {
+                Image(systemName: systemIcon)
+                    .font(.caption)
+            }
+            Text(title)
+                .font(.caption)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .background(style.chipBackground)
+        .clipShape(Capsule())
     }
 }
 

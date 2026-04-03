@@ -8,6 +8,21 @@ enum Category: String, CaseIterable, Identifiable, Codable, Sendable {
     case night = "Night"
     case family = "Family"
     var id: String { rawValue }
+
+    var systemIcon: String {
+        switch self {
+        case .nature:
+            return "leaf.fill"
+        case .urban:
+            return "building.2.fill"
+        case .water:
+            return "drop.fill"
+        case .night:
+            return "moon.fill"
+        case .family:
+            return "figure.2.and.child.holdinghands"
+        }
+    }
 }
 
 enum Effort: String, CaseIterable, Identifiable, Codable, Sendable {

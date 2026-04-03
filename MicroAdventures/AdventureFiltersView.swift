@@ -10,7 +10,7 @@ struct AdventureFiltersView: View {
     let timeBucket: TimeBucket
     let onCancel: () -> Void
     let onApply: (Set<Category>, Set<Effort>, EnergyLevel, WeatherCondition, DurationOption) -> Void
-    private let chipColumns = [GridItem(.adaptive(minimum: 96), spacing: 8)]
+    private let chipColumns = [GridItem(.adaptive(minimum: 110), spacing: 8)]
 
     init(
         selectedCategories: Set<Category>,
@@ -51,6 +51,7 @@ struct AdventureFiltersView: View {
                         ForEach(Category.allCases) { category in
                             filterChip(
                                 title: category.rawValue,
+                                systemIcon: category.systemIcon,
                                 isSelected: draftCategories.contains(category),
                                 action: { toggleCategory(category) }
                             )
@@ -123,15 +124,26 @@ struct AdventureFiltersView: View {
     }
 
     @ViewBuilder
-    private func filterChip(title: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
+    private func filterChip(
+        title: String,
+        systemIcon: String? = nil,
+        isSelected: Bool,
+        action: @escaping () -> Void
+    ) -> some View {
         Button(action: action) {
-            Text(title)
-                .font(.subheadline)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 8)
-                .foregroundStyle(isSelected ? .white : .primary)
-                .background(isSelected ? Color.accentColor : Color.secondary.opacity(0.16))
-                .clipShape(Capsule())
+            HStack(spacing: 6) {
+                if let systemIcon {
+                    Image(systemName: systemIcon)
+                        .font(.caption)
+                }
+                Text(title)
+                    .font(.subheadline)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 8)
+            .foregroundStyle(isSelected ? .white : .primary)
+            .background(isSelected ? Color.accentColor : Color.secondary.opacity(0.16))
+            .clipShape(Capsule())
         }
         .buttonStyle(.plain)
     }

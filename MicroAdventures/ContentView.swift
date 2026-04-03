@@ -16,16 +16,23 @@ struct ContentView: View {
     @StateObject private var userLocationManager = UserLocationManager()
 
     @State private var didApplyUserLocation = false
+    @State private var displayedAdventureID: UUID?
     @State private var pendingCenterOnUser = false
+    @State private var completionCelebration: CompletionCelebrationState?
     @State private var showingLocationAccessAlert = false
     @State private var cameraPosition: MapCameraPosition
 
     private let timeTicker = Timer.publish(every: 300, on: .main, in: .common).autoconnect()
     private let topSectionHeightFactor: CGFloat = 0.33
+    private let adventureTransition = AnyTransition.asymmetric(
+        insertion: .move(edge: .trailing),
+        removal: .move(edge: .leading)
+    )
 
     init() {
         let model = ContentViewModel()
         _viewModel = StateObject(wrappedValue: model)
+        _displayedAdventureID = State(initialValue: model.currentAdventure?.id)
 
         let start = model.mapSeedAdventure
         let region = MKCoordinateRegion(
@@ -80,9 +87,13 @@ struct ContentView: View {
             .onReceive(timeTicker) { date in
                 viewModel.refreshTime(date)
             }
-            .onChange(of: viewModel.currentAdventureID) { _, _ in
-                if let adventure = viewModel.currentAdventure {
-                    focusOn(adventure)
+            .onChange(of: viewModel.currentAdventureID) { _, newAdventureID in
+                let nextAdventure = resolveAdventure(for: newAdventureID) ?? viewModel.currentAdventure
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    displayedAdventureID = nextAdventure?.id
+                    if let nextAdventure {
+                        focusOn(nextAdventure)
+                    }
                 }
             }
             .sheet(isPresented: $viewModel.showingFilters) {
@@ -113,6 +124,18 @@ struct ContentView: View {
             } message: {
                 Text("Allow location access in Settings to center the map on your position.")
             }
+            .overlay(alignment: .bottom) {
+                if let completionCelebration {
+                    CompletionCelebrationView(
+                        currentStreak: completionCelebration.currentStreak,
+                        longestStreak: completionCelebration.longestStreak,
+                        onDismiss: dismissCompletionCelebration
+                    )
+                    .padding(.horizontal)
+                    .padding(.bottom, 28)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+            }
         }
     }
 
@@ -141,16 +164,21 @@ struct ContentView: View {
                 onOpenFilters: viewModel.showFilters
             )
 
-            if let adventure = viewModel.currentAdventure {
+            if let adventure = displayedAdventure {
                 AdventureCardView(
                     adventure: adventure,
                     whyText: viewModel.whyThisText(for: adventure),
                     style: cardStyle,
-                    onAnotherPick: viewModel.rerollTodayPick,
+                    onAnotherPick: {
+                        dismissCompletionCelebration()
+                        viewModel.rerollTodayPick()
+                    },
                     onToggleCompleted: {
-                        viewModel.toggleCompleted(for: adventure)
+                        handleCompletionToggle(for: adventure)
                     }
                 )
+                .id(adventure.id)
+                .transition(adventureTransition)
                 .padding(.horizontal)
                 .padding(.top, 34)
             } else {
@@ -160,6 +188,8 @@ struct ContentView: View {
                         viewModel.resetFilters()
                     }
                 )
+                .id("no-pick")
+                .transition(adventureTransition)
                 .padding(.horizontal)
                 .padding(.top, 34)
             }
@@ -241,6 +271,44 @@ struct ContentView: View {
             showingLocationAccessAlert = true
         }
     }
+
+    private var displayedAdventure: Adventure? {
+        guard let displayedAdventureID else { return viewModel.currentAdventure }
+        return resolveAdventure(for: displayedAdventureID) ?? viewModel.currentAdventure
+    }
+
+    private func resolveAdventure(for id: UUID?) -> Adventure? {
+        guard let id else { return nil }
+        return viewModel.adventures.first(where: { $0.id == id })
+    }
+
+    private func handleCompletionToggle(for adventure: Adventure) {
+        let isCompleted = viewModel.toggleCompleted(for: adventure)
+        guard isCompleted else {
+            dismissCompletionCelebration()
+            return
+        }
+
+        withAnimation(.easeInOut(duration: 0.3)) {
+            completionCelebration = CompletionCelebrationState(
+                currentStreak: viewModel.currentStreak,
+                longestStreak: viewModel.longestStreak
+            )
+        }
+    }
+
+    private func dismissCompletionCelebration() {
+        guard completionCelebration != nil else { return }
+        withAnimation(.easeInOut(duration: 0.2)) {
+            completionCelebration = nil
+        }
+    }
+}
+
+private struct CompletionCelebrationState: Identifiable {
+    let id = UUID()
+    let currentStreak: Int
+    let longestStreak: Int
 }
 
 #Preview {

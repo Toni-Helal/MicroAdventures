@@ -105,6 +105,52 @@ final class ContentViewModel: ObservableObject {
         return removedCategories + removedEfforts
     }
 
+    var currentStreak: Int {
+        let days = completionDaysSortedAscending
+        guard let lastCompletionDay = days.last else { return 0 }
+
+        let today = Calendar.current.startOfDay(for: now)
+        guard Calendar.current.isDate(lastCompletionDay, inSameDayAs: today) else { return 0 }
+
+        var streak = 0
+        var expectedDay = today
+        let completionDaySet = Set(days)
+
+        while completionDaySet.contains(expectedDay) {
+            streak += 1
+            guard let previousDay = Calendar.current.date(byAdding: .day, value: -1, to: expectedDay) else {
+                break
+            }
+            expectedDay = previousDay
+        }
+
+        return streak
+    }
+
+    var longestStreak: Int {
+        let days = completionDaysSortedAscending
+        guard !days.isEmpty else { return 0 }
+
+        var longest = 1
+        var current = 1
+
+        for index in 1..<days.count {
+            let previousDay = days[index - 1]
+            let currentDay = days[index]
+            let distance = Calendar.current.dateComponents([.day], from: previousDay, to: currentDay).day ?? 0
+
+            if distance == 1 {
+                current += 1
+            } else {
+                current = 1
+            }
+
+            longest = max(longest, current)
+        }
+
+        return longest
+    }
+
     func showFilters() {
         showingFilters = true
     }
@@ -210,11 +256,14 @@ final class ContentViewModel: ObservableObject {
         persistDailyPick()
     }
 
-    func toggleCompleted(for adventure: Adventure) {
-        guard let index = adventures.firstIndex(where: { $0.id == adventure.id }) else { return }
+    @discardableResult
+    func toggleCompleted(for adventure: Adventure) -> Bool {
+        now = Date()
+        guard let index = adventures.firstIndex(where: { $0.id == adventure.id }) else { return false }
         adventures[index].isCompleted.toggle()
         adventures[index].lastCompletedAt = adventures[index].isCompleted ? now : nil
         persistAdventures()
+        return adventures[index].isCompleted
     }
 
     func resetFilters() {
@@ -372,6 +421,13 @@ final class ContentViewModel: ObservableObject {
     private func handleContextChanged() {
         guard !isBootstrapping, !isBatchUpdatingContext else { return }
         ensureDailyPick(forceReselect: true)
+    }
+
+    private var completionDaysSortedAscending: [Date] {
+        let days = adventures.compactMap { adventure in
+            adventure.lastCompletedAt.map { Calendar.current.startOfDay(for: $0) }
+        }
+        return Array(Set(days)).sorted()
     }
 
     private func performBatchContextUpdate(_ updates: () -> Void) {
