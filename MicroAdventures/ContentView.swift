@@ -1,0 +1,274 @@
+//
+//  ContentView.swift
+//  MicroAdventures
+//
+//  Created by Antoun Helal on 05/02/2026.
+//
+
+import SwiftUI
+import MapKit
+internal import Combine
+
+struct ContentView: View {
+    @Environment(\.colorScheme) private var colorScheme
+    @StateObject private var viewModel: ContentViewModel
+    @StateObject private var userLocationManager = UserLocationManager()
+
+    @State private var didApplyUserLocation = false
+    @State private var pendingCenterOnUser = false
+    @State private var showingLocationAccessAlert = false
+    @State private var cameraPosition: MapCameraPosition
+    @State private var detailAdventure: Adventure?
+
+    private let timeTicker = Timer.publish(every: 300, on: .main, in: .common).autoconnect()
+    private let topSectionHeightFactor: CGFloat = 0.33
+
+    init() {
+        let model = ContentViewModel()
+        _viewModel = StateObject(wrappedValue: model)
+
+        let start = model.mapSeedAdventure
+        let region = MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: start.latitude, longitude: start.longitude),
+            span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)
+        )
+        _cameraPosition = State(initialValue: .region(region))
+    }
+
+    private var cardStyle: AdventureCardStyle {
+        AdventureCardStyle(
+            cardBackground: colorScheme == .dark ? Color.black.opacity(0.65) : Color.white.opacity(0.9),
+            chipBackground: colorScheme == .dark ? Color.white.opacity(0.12) : Color.gray.opacity(0.15),
+            doneButtonBackground: colorScheme == .dark ? Color.white.opacity(0.2) : Color.gray.opacity(0.25),
+            doneButtonForeground: colorScheme == .dark ? Color.white.opacity(0.9) : Color.gray.opacity(0.9)
+        )
+    }
+
+    private var actionIconColor: Color {
+        colorScheme == .dark ? Color.white.opacity(0.9) : Color.gray.opacity(0.85)
+    }
+
+    private var pinColor: Color {
+        colorScheme == .dark ? Color.white.opacity(0.85) : Color.gray
+    }
+
+    private var displayAdventure: Adventure? {
+        viewModel.currentAdventure ?? viewModel.bestAvailableAdventure
+    }
+
+    private var noPickTitle: String {
+        "No adventures available yet."
+    }
+
+    private var noPickMessage: String {
+        "Add adventure data to get recommendations."
+    }
+
+    var body: some View {
+        GeometryReader { proxy in
+            let topHeight = proxy.size.height * topSectionHeightFactor
+
+            ZStack(alignment: .top) {
+                mapLayer
+            }
+            .safeAreaInset(edge: .top) {
+                overlayContent(topHeight: topHeight)
+            }
+            .mapStyle(.standard)
+            .ignoresSafeArea()
+            .overlay {
+                if viewModel.showCelebration {
+                    CompletionCelebrationView(streak: viewModel.celebrationStreak) {
+                        viewModel.showCelebration = false
+                    }
+                }
+            }
+            .onAppear {
+                userLocationManager.requestPermissionAndLocation()
+                viewModel.ensureDailyPick(forceReselect: false)
+                if let adventure = displayAdventure {
+                    focusOn(adventure)
+                }
+            }
+            .onReceive(userLocationManager.$coordinate.compactMap { $0 }) { coordinate in
+                handleUserLocationUpdate(coordinate)
+            }
+            .onReceive(userLocationManager.$authorizationStatus) { status in
+                if pendingCenterOnUser, status == .denied || status == .restricted {
+                    pendingCenterOnUser = false
+                    showingLocationAccessAlert = true
+                }
+            }
+            .onReceive(timeTicker) { date in
+                viewModel.refreshTime(date)
+            }
+            .onChange(of: viewModel.currentAdventureID) { _, _ in
+                if let adventure = displayAdventure {
+                    focusOn(adventure)
+                }
+            }
+            .sheet(isPresented: $viewModel.showingFilters) {
+                AdventureFiltersView(
+                    selectedCategories: viewModel.selectedCategories,
+                    selectedEfforts: viewModel.selectedEfforts,
+                    selectedEnergy: viewModel.selectedEnergy,
+                    selectedWeather: viewModel.selectedWeather,
+                    selectedDuration: viewModel.selectedDuration,
+                    timeBucket: viewModel.timeBucket,
+                    onCancel: viewModel.hideFilters,
+                    onApply: { categories, efforts, energy, weather, duration in
+                        viewModel.applyFilters(
+                            categories: categories,
+                            efforts: efforts,
+                            energy: energy,
+                            weather: weather,
+                            duration: duration
+                        )
+                        viewModel.hideFilters()
+                    }
+                )
+            }
+            .sheet(item: $detailAdventure) { adventure in
+                AdventureDetailView(adventure: adventure)
+            }
+            .alert("Location Access Needed", isPresented: $showingLocationAccessAlert) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text("Enable location access in Settings to center the map on your position.")
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var mapLayer: some View {
+        Map(position: $cameraPosition) {
+            UserAnnotation()
+            if let adventure = displayAdventure {
+                Annotation(adventure.locationName, coordinate: adventure.coordinate) {
+                    Image(systemName: "mappin.circle.fill")
+                        .font(.title2)
+                        .foregroundStyle(pinColor)
+                        .shadow(radius: 2)
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func overlayContent(topHeight: CGFloat) -> some View {
+        VStack(spacing: 1) {
+            ContentHeaderView(
+                actionColor: actionIconColor,
+                activeFilterCount: viewModel.activeFilterCount,
+                onCenterMap: centerMapOnUser,
+                onOpenFilters: viewModel.showFilters
+            )
+
+            if let adventure = displayAdventure {
+                AdventureCardView(
+                    adventure: adventure,
+                    whyText: viewModel.whyThisText(for: adventure, tier: viewModel.currentTier ?? .bestAvailable),
+                    style: cardStyle,
+                    onOpenDetails: {
+                        detailAdventure = adventure
+                    },
+                    onAnotherPick: viewModel.rerollTodayPick,
+                    onToggleCompleted: {
+                        viewModel.toggleCompleted(for: adventure)
+                    }
+                )
+                .id(viewModel.currentAdventureID)
+                .transition(.asymmetric(
+                    insertion: .move(edge: .trailing).combined(with: .opacity),
+                    removal: .move(edge: .leading).combined(with: .opacity)
+                ))
+                .padding(.horizontal)
+                .padding(.top, 34)
+            } else {
+                NoPickCardView(
+                    cardBackground: cardStyle.cardBackground,
+                    title: noPickTitle,
+                    message: noPickMessage
+                )
+                .padding(.horizontal)
+                .padding(.top, 34)
+            }
+        }
+        .padding(.top, 98)
+        .padding(.bottom, 6)
+        .frame(height: topHeight, alignment: .top)
+        .animation(.spring(response: 0.35, dampingFraction: 0.8), value: viewModel.currentAdventureID)
+    }
+
+    private func focusOn(_ adventure: Adventure) {
+        if let userCoordinate = userLocationManager.coordinate {
+            let center = CLLocationCoordinate2D(
+                latitude: (userCoordinate.latitude + adventure.latitude) / 2,
+                longitude: (userCoordinate.longitude + adventure.longitude) / 2
+            )
+            let latitudeDelta = max(abs(userCoordinate.latitude - adventure.latitude) * 2.2, 0.02)
+            let longitudeDelta = max(abs(userCoordinate.longitude - adventure.longitude) * 2.2, 0.02)
+            cameraPosition = .region(MKCoordinateRegion(
+                center: center,
+                span: MKCoordinateSpan(latitudeDelta: latitudeDelta, longitudeDelta: longitudeDelta)
+            ))
+            return
+        }
+
+        cameraPosition = .region(MKCoordinateRegion(
+            center: adventure.coordinate,
+            span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)
+        ))
+    }
+
+    private func setCameraOnUser(_ coordinate: CLLocationCoordinate2D) {
+        cameraPosition = .region(MKCoordinateRegion(
+            center: coordinate,
+            span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)
+        ))
+    }
+
+    private func centerMapOnUser() {
+        pendingCenterOnUser = true
+        userLocationManager.requestPermissionAndLocation()
+
+        guard let userCoordinate = userLocationManager.coordinate else {
+            if userLocationManager.isAccessDeniedOrRestricted {
+                pendingCenterOnUser = false
+                showingLocationAccessAlert = true
+            }
+            return
+        }
+        didApplyUserLocation = true
+        pendingCenterOnUser = false
+        setCameraOnUser(userCoordinate)
+    }
+
+    private func handleUserLocationUpdate(_ coordinate: CLLocationCoordinate2D) {
+        viewModel.updateUserCoordinate(coordinate)
+
+        if pendingCenterOnUser {
+            pendingCenterOnUser = false
+            didApplyUserLocation = true
+            setCameraOnUser(coordinate)
+            return
+        }
+
+        if !didApplyUserLocation {
+            didApplyUserLocation = true
+            if let adventure = displayAdventure {
+                focusOn(adventure)
+            } else {
+                setCameraOnUser(coordinate)
+            }
+        }
+    }
+}
+
+#if DEBUG
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
+}
+#endif
