@@ -51,6 +51,7 @@ struct AdventureFiltersView: View {
                         ForEach(Category.allCases) { category in
                             filterChip(
                                 title: category.rawValue,
+                                icon: category.icon,
                                 isSelected: draftCategories.contains(category),
                                 action: { toggleCategory(category) }
                             )
@@ -123,15 +124,21 @@ struct AdventureFiltersView: View {
     }
 
     @ViewBuilder
-    private func filterChip(title: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
+    private func filterChip(title: String, icon: String? = nil, isSelected: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Text(title)
-                .font(.subheadline)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 8)
-                .foregroundStyle(isSelected ? .white : .primary)
-                .background(isSelected ? Color.accentColor : Color.secondary.opacity(0.16))
-                .clipShape(Capsule())
+            Group {
+                if let icon {
+                    Label(title, systemImage: icon)
+                } else {
+                    Text(title)
+                }
+            }
+            .font(.subheadline)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 8)
+            .foregroundStyle(isSelected ? .white : .primary)
+            .background(isSelected ? Color.accentColor : Color.secondary.opacity(0.16))
+            .clipShape(Capsule())
         }
         .buttonStyle(.plain)
     }

@@ -8,6 +8,9 @@ final class UserLocationManager: NSObject, ObservableObject, CLLocationManagerDe
 
     private let manager = CLLocationManager()
 
+    private static let lastLatKey = "micro_adventures_last_lat_v1"
+    private static let lastLngKey = "micro_adventures_last_lng_v1"
+
     var isAccessDeniedOrRestricted: Bool {
         authorizationStatus == .denied || authorizationStatus == .restricted
     }
@@ -17,6 +20,9 @@ final class UserLocationManager: NSObject, ObservableObject, CLLocationManagerDe
         manager.delegate = self
         manager.desiredAccuracy = kCLLocationAccuracyHundredMeters
         authorizationStatus = manager.authorizationStatus
+        if let restored = Self.loadStoredCoordinate() {
+            coordinate = restored
+        }
     }
 
     func requestPermissionAndLocation() {
@@ -37,9 +43,28 @@ final class UserLocationManager: NSObject, ObservableObject, CLLocationManagerDe
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         coordinate = locations.last?.coordinate
+        if let coord = coordinate {
+            persistCoordinate(coord)
+        }
     }
 
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         // Keep fallback map behavior if location is unavailable.
+    }
+
+    private func persistCoordinate(_ coord: CLLocationCoordinate2D) {
+        UserDefaults.standard.set(coord.latitude,  forKey: Self.lastLatKey)
+        UserDefaults.standard.set(coord.longitude, forKey: Self.lastLngKey)
+    }
+
+    private static func loadStoredCoordinate() -> CLLocationCoordinate2D? {
+        let defaults = UserDefaults.standard
+        guard defaults.object(forKey: lastLatKey) != nil,
+              defaults.object(forKey: lastLngKey) != nil
+        else { return nil }
+        return CLLocationCoordinate2D(
+            latitude:  defaults.double(forKey: lastLatKey),
+            longitude: defaults.double(forKey: lastLngKey)
+        )
     }
 }

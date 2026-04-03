@@ -1,6 +1,7 @@
 internal import Combine
 import CoreLocation
 import Foundation
+import UIKit
 
 enum TimeBucket: String {
     case morning = "Morning"
@@ -51,6 +52,8 @@ final class ContentViewModel: ObservableObject {
         didSet { handleContextChanged() }
     }
     @Published var showingFilters = false
+    @Published var showCelebration = false
+    private(set) var celebrationStreak: Int = 0
 
     @Published private(set) var timeBucket: TimeBucket = TimeBucket.current(for: Date())
     @Published private(set) var currentAdventureID: UUID?
@@ -71,6 +74,11 @@ final class ContentViewModel: ObservableObject {
     private static let dailyPickDateKey = "micro_adventures_daily_pick_date_v1"
     private static let dailyPickIdKey = "micro_adventures_daily_pick_id_v1"
     private static let dailyPickLocationAwareDateKey = "micro_adventures_daily_pick_location_aware_date_v1"
+    private static let filterCategoriesKey = "micro_adventures_filter_categories_v1"
+    private static let filterEffortsKey    = "micro_adventures_filter_efforts_v1"
+    private static let filterEnergyKey     = "micro_adventures_filter_energy_v1"
+    private static let filterWeatherKey    = "micro_adventures_filter_weather_v1"
+    private static let filterDurationKey   = "micro_adventures_filter_duration_v1"
 
     init() {
         let initialAdventures = Self.loadStoredAdventures()
@@ -85,6 +93,12 @@ final class ContentViewModel: ObservableObject {
         currentAdventureID = storedPick.date.flatMap {
             Calendar.current.isDate($0, inSameDayAs: today) ? storedPick.id : nil
         }
+        let storedFilters = Self.loadStoredFilters()
+        if let cats = storedFilters.categories { selectedCategories = cats }
+        if let effs = storedFilters.efforts    { selectedEfforts = effs }
+        if let nrg  = storedFilters.energy     { selectedEnergy = nrg }
+        if let wth  = storedFilters.weather    { selectedWeather = wth }
+        if let dur  = storedFilters.duration   { selectedDuration = dur }
         isBootstrapping = false
     }
 
@@ -94,6 +108,36 @@ final class ContentViewModel: ObservableObject {
 
     var hasFilteredAdventures: Bool {
         !filteredAdventures.isEmpty
+    }
+
+    var activeFilterCount: Int {
+        var count = 0
+        if selectedCategories != Set(Category.allCases) { count += 1 }
+        if selectedEfforts != Set(Effort.allCases)       { count += 1 }
+        if selectedEnergy != .medium                     { count += 1 }
+        if selectedWeather != .clear                     { count += 1 }
+        if selectedDuration != .thirty                   { count += 1 }
+        return count
+    }
+
+    var currentStreak: Int {
+        let calendar = Calendar.current
+        let completionDays = Set(adventures.compactMap { $0.lastCompletedAt }.map {
+            calendar.startOfDay(for: $0)
+        })
+        guard !completionDays.isEmpty else { return 0 }
+        var streak = 0
+        var checkDay = calendar.startOfDay(for: now)
+        if !completionDays.contains(checkDay) {
+            guard let yesterday = calendar.date(byAdding: .day, value: -1, to: checkDay) else { return 0 }
+            checkDay = yesterday
+        }
+        while completionDays.contains(checkDay) {
+            streak += 1
+            guard let prev = calendar.date(byAdding: .day, value: -1, to: checkDay) else { break }
+            checkDay = prev
+        }
+        return streak
     }
 
     var bestAvailableAdventure: Adventure? {
@@ -124,6 +168,7 @@ final class ContentViewModel: ObservableObject {
         weather: WeatherCondition,
         duration: DurationOption
     ) {
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
         performBatchContextUpdate {
             selectedCategories = categories
             selectedEfforts = efforts
@@ -131,6 +176,7 @@ final class ContentViewModel: ObservableObject {
             selectedWeather = weather
             selectedDuration = duration
         }
+        persistFilters()
     }
 
     // Explicit product behavior: rerolling replaces today's official pick.
@@ -219,6 +265,10 @@ final class ContentViewModel: ObservableObject {
         adventures[index].isCompleted.toggle()
         adventures[index].lastCompletedAt = adventures[index].isCompleted ? now : nil
         persistAdventures()
+        if adventures[index].isCompleted {
+            celebrationStreak = currentStreak
+            showCelebration = true
+        }
     }
 
     func resetFilters() {
@@ -229,6 +279,7 @@ final class ContentViewModel: ObservableObject {
             selectedWeather = .clear
             selectedDuration = .thirty
         }
+        persistFilters()
     }
 
     func whyThisText(for adventure: Adventure, tier: FallbackTier) -> String {
@@ -590,6 +641,44 @@ final class ContentViewModel: ObservableObject {
         } else {
             defaults.removeObject(forKey: Self.dailyPickLocationAwareDateKey)
         }
+    }
+
+    private func persistFilters() {
+        let defaults = UserDefaults.standard
+        let encoder = JSONEncoder()
+        if let data = try? encoder.encode(Array(selectedCategories)) {
+            defaults.set(data, forKey: Self.filterCategoriesKey)
+        }
+        if let data = try? encoder.encode(Array(selectedEfforts)) {
+            defaults.set(data, forKey: Self.filterEffortsKey)
+        }
+        defaults.set(selectedEnergy.rawValue,    forKey: Self.filterEnergyKey)
+        defaults.set(selectedWeather.rawValue,   forKey: Self.filterWeatherKey)
+        defaults.set(selectedDuration.rawValue,  forKey: Self.filterDurationKey)
+    }
+
+    private static func loadStoredFilters() -> (
+        categories: Set<Category>?,
+        efforts: Set<Effort>?,
+        energy: EnergyLevel?,
+        weather: WeatherCondition?,
+        duration: DurationOption?
+    ) {
+        let defaults = UserDefaults.standard
+        let decoder = JSONDecoder()
+        let cats: Set<Category>? = defaults.data(forKey: filterCategoriesKey)
+            .flatMap { try? decoder.decode([Category].self, from: $0) }
+            .map { Set($0) }
+        let effs: Set<Effort>? = defaults.data(forKey: filterEffortsKey)
+            .flatMap { try? decoder.decode([Effort].self, from: $0) }
+            .map { Set($0) }
+        let nrg: EnergyLevel? = defaults.string(forKey: filterEnergyKey)
+            .flatMap { EnergyLevel(rawValue: $0) }
+        let wth: WeatherCondition? = defaults.string(forKey: filterWeatherKey)
+            .flatMap { WeatherCondition(rawValue: $0) }
+        let durRaw = defaults.integer(forKey: filterDurationKey)
+        let dur: DurationOption? = durRaw > 0 ? DurationOption(rawValue: durRaw) : nil
+        return (cats, effs, nrg, wth, dur)
     }
 
     private static func loadStoredDailyPick() -> (date: Date?, id: UUID?, locationAwareDate: Date?) {

@@ -19,7 +19,7 @@ struct AdventureCardView: View {
         VStack(alignment: .leading, spacing: 8) {
             VStack(alignment: .leading, spacing: 8) {
                 HStack(spacing: 8) {
-                    Text(adventure.category.rawValue)
+                    Label(adventure.category.rawValue, systemImage: adventure.category.icon)
                         .font(.caption)
                         .padding(.horizontal, 10)
                         .padding(.vertical, 6)
@@ -50,6 +50,20 @@ struct AdventureCardView: View {
                     .foregroundStyle(.secondary)
                     .lineLimit(3)
 
+                if !adventure.flavorTags.isEmpty {
+                    HStack(spacing: 6) {
+                        ForEach(adventure.flavorTags.prefix(3), id: \.self) { tag in
+                            Text("#\(tag)")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(.secondary.opacity(0.1), in: Capsule())
+                        }
+                        Spacer()
+                    }
+                }
+
                 VStack(alignment: .leading, spacing: 4) {
                     AdventureInfoRow(icon: "bolt.fill", text: "Energy: \(adventure.recommendedEnergy.rawValue)")
                     AdventureInfoRow(icon: "clock", text: "Best time: \(adventure.bestTimeWindow.rawValue)")
@@ -68,6 +82,7 @@ struct AdventureCardView: View {
 
             HStack(spacing: 10) {
                 Button {
+                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                     onAnotherPick()
                 } label: {
                     Text("Reroll Today")
@@ -84,6 +99,8 @@ struct AdventureCardView: View {
                 Spacer()
 
                 Button {
+                    let generator = UINotificationFeedbackGenerator()
+                    generator.notificationOccurred(adventure.isCompleted ? .warning : .success)
                     onToggleCompleted()
                 } label: {
                     Text(adventure.isCompleted ? "Completed" : "Done")
