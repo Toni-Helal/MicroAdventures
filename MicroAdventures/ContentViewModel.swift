@@ -57,10 +57,22 @@ final class ContentViewModel: ObservableObject {
     private static let storageKey = "micro_adventures_store_v1"
     private static let dailyPickDateKey = "micro_adventures_daily_pick_date_v1"
     private static let dailyPickIdKey = "micro_adventures_daily_pick_id_v1"
+    private static let filtersCategoriesKey = "micro_adventures_filters_categories_v1"
+    private static let filtersEffortsKey = "micro_adventures_filters_efforts_v1"
+    private static let filtersEnergyKey = "micro_adventures_filters_energy_v1"
+    private static let filtersWeatherKey = "micro_adventures_filters_weather_v1"
+    private static let filtersDurationKey = "micro_adventures_filters_duration_v1"
 
     init() {
         let initialAdventures = Self.loadStoredAdventures()
         adventures = initialAdventures
+
+        let storedFilters = Self.loadStoredFilters()
+        selectedCategories = storedFilters.categories
+        selectedEfforts = storedFilters.efforts
+        selectedEnergy = storedFilters.energy
+        selectedWeather = storedFilters.weather
+        selectedDuration = storedFilters.duration
 
         let storedPick = Self.loadStoredDailyPick()
         dailyPickDate = storedPick.date
@@ -85,6 +97,12 @@ final class ContentViewModel: ObservableObject {
             return match
         }
         return topCandidate()
+    }
+
+    var activeFilterCount: Int {
+        let removedCategories = max(0, Category.allCases.count - selectedCategories.count)
+        let removedEfforts = max(0, Effort.allCases.count - selectedEfforts.count)
+        return removedCategories + removedEfforts
     }
 
     func showFilters() {
@@ -113,6 +131,7 @@ final class ContentViewModel: ObservableObject {
             selectedWeather = weather
             selectedDuration = duration
         }
+        persistFilters()
     }
 
     // Explicit product behavior: rerolling replaces today's official pick.
@@ -206,6 +225,7 @@ final class ContentViewModel: ObservableObject {
             selectedWeather = .clear
             selectedDuration = .thirty
         }
+        persistFilters()
     }
 
     func whyThisText(for adventure: Adventure) -> String {
@@ -515,6 +535,49 @@ final class ContentViewModel: ObservableObject {
         } else {
             defaults.removeObject(forKey: Self.dailyPickIdKey)
         }
+    }
+
+    private func persistFilters() {
+        let defaults = UserDefaults.standard
+        defaults.set(selectedCategories.map(\.rawValue), forKey: Self.filtersCategoriesKey)
+        defaults.set(selectedEfforts.map(\.rawValue), forKey: Self.filtersEffortsKey)
+        defaults.set(selectedEnergy.rawValue, forKey: Self.filtersEnergyKey)
+        defaults.set(selectedWeather.rawValue, forKey: Self.filtersWeatherKey)
+        defaults.set(selectedDuration.rawValue, forKey: Self.filtersDurationKey)
+    }
+
+    private static func loadStoredFilters() -> (
+        categories: Set<Category>,
+        efforts: Set<Effort>,
+        energy: EnergyLevel,
+        weather: WeatherCondition,
+        duration: DurationOption
+    ) {
+        let defaults = UserDefaults.standard
+
+        let defaultCategories = Set(Category.allCases)
+        let storedCategoryValues = defaults.array(forKey: filtersCategoriesKey) as? [String]
+        let storedCategories = Set((storedCategoryValues ?? []).compactMap(Category.init(rawValue:)))
+        let categories = storedCategoryValues == nil ? defaultCategories : storedCategories
+
+        let defaultEfforts = Set(Effort.allCases)
+        let storedEffortValues = defaults.array(forKey: filtersEffortsKey) as? [String]
+        let storedEfforts = Set((storedEffortValues ?? []).compactMap(Effort.init(rawValue:)))
+        let efforts = storedEffortValues == nil ? defaultEfforts : storedEfforts
+
+        let energy = defaults.string(forKey: filtersEnergyKey).flatMap(EnergyLevel.init(rawValue:)) ?? .medium
+        let weather = defaults.string(forKey: filtersWeatherKey).flatMap(WeatherCondition.init(rawValue:)) ?? .clear
+
+        let storedDurationRaw = defaults.object(forKey: filtersDurationKey) as? Int
+        let duration = storedDurationRaw.flatMap(DurationOption.init(rawValue:)) ?? .thirty
+
+        return (
+            categories: categories,
+            efforts: efforts,
+            energy: energy,
+            weather: weather,
+            duration: duration
+        )
     }
 
     private static func loadStoredDailyPick() -> (date: Date?, id: UUID?) {

@@ -1,0 +1,71 @@
+{
+  "buildCommand" : {
+    "command" : "build",
+    "skipDependencies" : false,
+    "style" : "buildOnly"
+  },
+  "configuredTargets" : [
+    {
+      "guid" : "4244ea6722f291c001f7d3c2b5d8e7edacf22807761ef16caab753542e0db6b6"
+    }
+  ],
+  "containerPath" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/MicroAdventures.xcodeproj",
+  "continueBuildingAfterErrors" : false,
+  "dependencyScope" : "workspace",
+  "enableIndexBuildArena" : false,
+  "hideShellScriptEnvironment" : false,
+  "parameters" : {
+    "action" : "build",
+    "activeArchitecture" : "undefined_arch",
+    "activeRunDestination" : {
+      "disableOnlyActiveArch" : true,
+      "hostTargetedPlatform" : null,
+      "platform" : "iphoneos",
+      "sdk" : "iphoneos26.4",
+      "sdkVariant" : "iphoneos",
+      "supportedArchitectures" : [
+        "armv4t",
+        "armv5",
+        "armv6",
+        "armv7",
+        "armv7f",
+        "armv7s",
+        "armv7k",
+        "arm64",
+        "arm64e"
+      ],
+      "targetArchitecture" : "undefined_arch"
+    },
+    "arenaInfo" : {
+      "buildIntermediatesPath" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex",
+      "buildProductsPath" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Products",
+      "derivedDataPath" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData",
+      "indexDataStoreFolderPath" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Index.noindex/DataStore",
+      "indexEnableDataStore" : true,
+      "indexPCHPath" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Index.noindex/PrecompiledHeaders",
+      "pchPath" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/PrecompiledHeaders"
+    },
+    "configurationName" : "Debug",
+    "overrides" : {
+      "commandLine" : {
+        "table" : {
+          "CODE_SIGNING_ALLOWED" : "NO"
+        }
+      },
+      "synthesized" : {
+        "table" : {
+          "ACTION" : "build",
+          "ENABLE_PREVIEWS" : "NO",
+          "ENABLE_XOJIT_PREVIEWS" : "YES",
+          "ONLY_ACTIVE_ARCH" : "YES"
+        }
+      }
+    }
+  },
+  "schemeCommand" : "launch",
+  "showNonLoggedProgress" : true,
+  "useDryRun" : false,
+  "useImplicitDependencies" : true,
+  "useLegacyBuildLocations" : false,
+  "useParallelTargets" : true
+}

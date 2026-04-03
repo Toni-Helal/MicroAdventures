@@ -7,7 +7,7 @@
         "key": "Micro Adventures",
         "location": {
           "startingColumn": 18,
-          "startingLine": 10
+          "startingLine": 11
         }
       },
       {
@@ -15,7 +15,7 @@
         "key": "Center map on my location",
         "location": {
           "startingColumn": 33,
-          "startingLine": 24
+          "startingLine": 25
         }
       },
       {
@@ -23,7 +23,31 @@
         "key": "Filter adventures",
         "location": {
           "startingColumn": 33,
-          "startingLine": 33
+          "startingLine": 44
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld active filters",
+        "location": {
+          "startingColumn": 57,
+          "startingLine": 45
+        }
+      },
+      {
+        "comment": "",
+        "key": "No active filters",
+        "location": {
+          "startingColumn": 97,
+          "startingLine": 45
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 35
         }
       }
     ]

@@ -7,7 +7,7 @@
         "key": "Why this? %@",
         "location": {
           "startingColumn": 18,
-          "startingLine": 41
+          "startingLine": 42
         }
       },
       {
@@ -15,7 +15,7 @@
         "key": "Reroll today's adventure",
         "location": {
           "startingColumn": 37,
-          "startingLine": 71
+          "startingLine": 74
         }
       },
       {
@@ -23,7 +23,7 @@
         "key": "Adventure completed",
         "location": {
           "startingColumn": 61,
-          "startingLine": 87
+          "startingLine": 94
         }
       },
       {
@@ -31,7 +31,7 @@
         "key": "Mark adventure as completed",
         "location": {
           "startingColumn": 85,
-          "startingLine": 87
+          "startingLine": 94
         }
       },
       {
@@ -39,7 +39,7 @@
         "key": "Reroll Today",
         "location": {
           "startingColumn": 26,
-          "startingLine": 62
+          "startingLine": 65
         }
       },
       {
@@ -47,7 +47,7 @@
         "key": "Completed",
         "location": {
           "startingColumn": 50,
-          "startingLine": 78
+          "startingLine": 85
         }
       },
       {
@@ -55,7 +55,7 @@
         "key": "Done",
         "location": {
           "startingColumn": 64,
-          "startingLine": 78
+          "startingLine": 85
         }
       }
     ]

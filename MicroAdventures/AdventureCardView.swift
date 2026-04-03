@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct AdventureCardStyle {
     let cardBackground: Color
@@ -57,6 +58,8 @@ struct AdventureCardView: View {
 
             HStack(spacing: 10) {
                 Button {
+                    let generator = UIImpactFeedbackGenerator(style: .medium)
+                    generator.impactOccurred()
                     onAnotherPick()
                 } label: {
                     Text("Reroll Today")
@@ -73,6 +76,10 @@ struct AdventureCardView: View {
                 Spacer()
 
                 Button {
+                    if !adventure.isCompleted {
+                        let generator = UINotificationFeedbackGenerator()
+                        generator.notificationOccurred(.success)
+                    }
                     onToggleCompleted()
                 } label: {
                     Text(adventure.isCompleted ? "Completed" : "Done")

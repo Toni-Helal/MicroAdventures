@@ -7,6 +7,7 @@
 
 import SwiftUI
 import MapKit
+import UIKit
 internal import Combine
 
 struct ContentView: View {
@@ -101,6 +102,8 @@ struct ContentView: View {
                             weather: weather,
                             duration: duration
                         )
+                        let generator = UIImpactFeedbackGenerator(style: .light)
+                        generator.impactOccurred()
                         viewModel.hideFilters()
                     }
                 )
@@ -133,6 +136,7 @@ struct ContentView: View {
         VStack(spacing: 1) {
             ContentHeaderView(
                 actionColor: actionIconColor,
+                activeFilterCount: viewModel.activeFilterCount,
                 onCenterMap: centerMapOnUser,
                 onOpenFilters: viewModel.showFilters
             )
