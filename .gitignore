@@ -5,6 +5,7 @@
 
 # Build products
 DerivedData/
+.derivedData/
 
 # macOS
 .DS_Store
