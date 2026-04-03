@@ -1,0 +1,139 @@
+{
+  "" : {
+    "diagnostics" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/MicroAdventures-primary.dia",
+    "emit-module-dependencies" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/MicroAdventures-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/MicroAdventures-primary-emit-module.dia",
+    "pch" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/MicroAdventures-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/MicroAdventures-primary.swiftdeps"
+  },
+  "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "const-values" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/GeneratedAssetSymbols.swiftconstvalues",
+    "dependencies" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/GeneratedAssetSymbols.d",
+    "diagnostics" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/GeneratedAssetSymbols.dia",
+    "index-unit-output-path" : "/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/GeneratedAssetSymbols.o",
+    "swift-dependencies" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/GeneratedAssetSymbols.swiftdeps",
+    "swiftmodule" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/GeneratedAssetSymbols~partial.swiftmodule"
+  },
+  "/Users/antounhelal/Documents/Playground/MicroAdventures/MicroAdventures/Adventure.swift" : {
+    "const-values" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/Adventure.swiftconstvalues",
+    "dependencies" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/Adventure.d",
+    "diagnostics" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/Adventure.dia",
+    "index-unit-output-path" : "/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/Adventure.o",
+    "llvm-bc" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/Adventure.bc",
+    "object" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/Adventure.o",
+    "swift-dependencies" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/Adventure.swiftdeps",
+    "swiftmodule" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/Adventure~partial.swiftmodule"
+  },
+  "/Users/antounhelal/Documents/Playground/MicroAdventures/MicroAdventures/AdventureCardView.swift" : {
+    "const-values" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/AdventureCardView.swiftconstvalues",
+    "dependencies" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/AdventureCardView.d",
+    "diagnostics" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/AdventureCardView.dia",
+    "index-unit-output-path" : "/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/AdventureCardView.o",
+    "llvm-bc" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/AdventureCardView.bc",
+    "object" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/AdventureCardView.o",
+    "swift-dependencies" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/AdventureCardView.swiftdeps",
+    "swiftmodule" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/AdventureCardView~partial.swiftmodule"
+  },
+  "/Users/antounhelal/Documents/Playground/MicroAdventures/MicroAdventures/AdventureDetailView.swift" : {
+    "const-values" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/AdventureDetailView.swiftconstvalues",
+    "dependencies" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/AdventureDetailView.d",
+    "diagnostics" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/AdventureDetailView.dia",
+    "index-unit-output-path" : "/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/AdventureDetailView.o",
+    "llvm-bc" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/AdventureDetailView.bc",
+    "object" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/AdventureDetailView.o",
+    "swift-dependencies" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/AdventureDetailView.swiftdeps",
+    "swiftmodule" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/AdventureDetailView~partial.swiftmodule"
+  },
+  "/Users/antounhelal/Documents/Playground/MicroAdventures/MicroAdventures/AdventureFiltersView.swift" : {
+    "const-values" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/AdventureFiltersView.swiftconstvalues",
+    "dependencies" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/AdventureFiltersView.d",
+    "diagnostics" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/AdventureFiltersView.dia",
+    "index-unit-output-path" : "/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/AdventureFiltersView.o",
+    "llvm-bc" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/AdventureFiltersView.bc",
+    "object" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/AdventureFiltersView.o",
+    "swift-dependencies" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/AdventureFiltersView.swiftdeps",
+    "swiftmodule" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/AdventureFiltersView~partial.swiftmodule"
+  },
+  "/Users/antounhelal/Documents/Playground/MicroAdventures/MicroAdventures/CompletionCelebrationView.swift" : {
+    "const-values" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/CompletionCelebrationView.swiftconstvalues",
+    "dependencies" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/CompletionCelebrationView.d",
+    "diagnostics" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/CompletionCelebrationView.dia",
+    "index-unit-output-path" : "/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/CompletionCelebrationView.o",
+    "llvm-bc" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/CompletionCelebrationView.bc",
+    "object" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/CompletionCelebrationView.o",
+    "swift-dependencies" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/CompletionCelebrationView.swiftdeps",
+    "swiftmodule" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/CompletionCelebrationView~partial.swiftmodule"
+  },
+  "/Users/antounhelal/Documents/Playground/MicroAdventures/MicroAdventures/ContentHeaderView.swift" : {
+    "const-values" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/ContentHeaderView.swiftconstvalues",
+    "dependencies" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/ContentHeaderView.d",
+    "diagnostics" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/ContentHeaderView.dia",
+    "index-unit-output-path" : "/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/ContentHeaderView.o",
+    "llvm-bc" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/ContentHeaderView.bc",
+    "object" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/ContentHeaderView.o",
+    "swift-dependencies" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/ContentHeaderView.swiftdeps",
+    "swiftmodule" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/ContentHeaderView~partial.swiftmodule"
+  },
+  "/Users/antounhelal/Documents/Playground/MicroAdventures/MicroAdventures/ContentView.swift" : {
+    "const-values" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/ContentView.swiftconstvalues",
+    "dependencies" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/ContentView.d",
+    "diagnostics" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/ContentView.dia",
+    "index-unit-output-path" : "/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/ContentView.o",
+    "llvm-bc" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/ContentView.bc",
+    "object" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/ContentView.o",
+    "swift-dependencies" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/ContentView.swiftdeps",
+    "swiftmodule" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/ContentView~partial.swiftmodule"
+  },
+  "/Users/antounhelal/Documents/Playground/MicroAdventures/MicroAdventures/ContentViewModel.swift" : {
+    "const-values" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/ContentViewModel.swiftconstvalues",
+    "dependencies" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/ContentViewModel.d",
+    "diagnostics" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/ContentViewModel.dia",
+    "index-unit-output-path" : "/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/ContentViewModel.o",
+    "llvm-bc" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/ContentViewModel.bc",
+    "object" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/ContentViewModel.o",
+    "swift-dependencies" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/ContentViewModel.swiftdeps",
+    "swiftmodule" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/ContentViewModel~partial.swiftmodule"
+  },
+  "/Users/antounhelal/Documents/Playground/MicroAdventures/MicroAdventures/MicroAdventuresApp.swift" : {
+    "const-values" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/MicroAdventuresApp.swiftconstvalues",
+    "dependencies" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/MicroAdventuresApp.d",
+    "diagnostics" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/MicroAdventuresApp.dia",
+    "index-unit-output-path" : "/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/MicroAdventuresApp.o",
+    "llvm-bc" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/MicroAdventuresApp.bc",
+    "object" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/MicroAdventuresApp.o",
+    "swift-dependencies" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/MicroAdventuresApp.swiftdeps",
+    "swiftmodule" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/MicroAdventuresApp~partial.swiftmodule"
+  },
+  "/Users/antounhelal/Documents/Playground/MicroAdventures/MicroAdventures/NoPickCardView.swift" : {
+    "const-values" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/NoPickCardView.swiftconstvalues",
+    "dependencies" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/NoPickCardView.d",
+    "diagnostics" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/NoPickCardView.dia",
+    "index-unit-output-path" : "/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/NoPickCardView.o",
+    "llvm-bc" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/NoPickCardView.bc",
+    "object" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/NoPickCardView.o",
+    "swift-dependencies" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/NoPickCardView.swiftdeps",
+    "swiftmodule" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/NoPickCardView~partial.swiftmodule"
+  },
+  "/Users/antounhelal/Documents/Playground/MicroAdventures/MicroAdventures/QuickTuneBarView.swift" : {
+    "const-values" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/QuickTuneBarView.swiftconstvalues",
+    "dependencies" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/QuickTuneBarView.d",
+    "diagnostics" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/QuickTuneBarView.dia",
+    "index-unit-output-path" : "/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/QuickTuneBarView.o",
+    "llvm-bc" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/QuickTuneBarView.bc",
+    "object" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/QuickTuneBarView.o",
+    "swift-dependencies" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/QuickTuneBarView.swiftdeps",
+    "swiftmodule" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/QuickTuneBarView~partial.swiftmodule"
+  },
+  "/Users/antounhelal/Documents/Playground/MicroAdventures/MicroAdventures/UserLocationManager.swift" : {
+    "const-values" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/UserLocationManager.swiftconstvalues",
+    "dependencies" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/UserLocationManager.d",
+    "diagnostics" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/UserLocationManager.dia",
+    "index-unit-output-path" : "/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/UserLocationManager.o",
+    "llvm-bc" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/UserLocationManager.bc",
+    "object" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/UserLocationManager.o",
+    "swift-dependencies" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/UserLocationManager.swiftdeps",
+    "swiftmodule" : "/Users/antounhelal/Documents/Playground/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphonesimulator/MicroAdventures.build/Objects-normal/x86_64/UserLocationManager~partial.swiftmodule"
+  }
+}
