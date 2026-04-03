@@ -56,11 +56,11 @@ struct ContentView: View {
     }
 
     private var noPickTitle: String {
-        "No adventures match these filters."
+        "No adventures available yet."
     }
 
     private var noPickMessage: String {
-        "Try broadening your filters or reset filters."
+        "Add adventure data to get recommendations."
     }
 
     var body: some View {
@@ -147,7 +147,7 @@ struct ContentView: View {
             if let adventure = displayAdventure {
                 AdventureCardView(
                     adventure: adventure,
-                    whyText: viewModel.whyThisText(for: adventure),
+                    whyText: viewModel.whyThisText(for: adventure, tier: viewModel.currentTier ?? .bestAvailable),
                     style: cardStyle,
                     onOpenDetails: {
                         detailAdventure = adventure
@@ -163,10 +163,7 @@ struct ContentView: View {
                 NoPickCardView(
                     cardBackground: cardStyle.cardBackground,
                     title: noPickTitle,
-                    message: noPickMessage,
-                    onResetFilters: {
-                        viewModel.resetFilters()
-                    }
+                    message: noPickMessage
                 )
                 .padding(.horizontal)
                 .padding(.top, 34)

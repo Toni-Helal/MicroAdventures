@@ -23,6 +23,17 @@ enum TimeBucket: String {
     }
 }
 
+enum FallbackTier {
+    case exact
+    case nearMatch
+    case bestAvailable
+}
+
+struct RecommendationResult {
+    let adventure: Adventure
+    let tier: FallbackTier
+}
+
 final class ContentViewModel: ObservableObject {
     @Published var selectedCategories: Set<Category> = Set(Category.allCases) {
         didSet { handleContextChanged() }
@@ -43,6 +54,7 @@ final class ContentViewModel: ObservableObject {
 
     @Published private(set) var timeBucket: TimeBucket = TimeBucket.current(for: Date())
     @Published private(set) var currentAdventureID: UUID?
+    @Published private(set) var currentTier: FallbackTier?
     @Published private(set) var adventures: [Adventure]
 
     private var dailyPickDate: Date?
@@ -85,20 +97,12 @@ final class ContentViewModel: ObservableObject {
     }
 
     var bestAvailableAdventure: Adventure? {
-        bestAvailableFilteredAdventure(excluding: [])
+        selectAdventure(excluding: [])?.adventure
     }
 
     var currentAdventure: Adventure? {
-        guard hasFilteredAdventures else { return nil }
-
-        if let id = currentAdventureID,
-           let match = adventures.first(where: { $0.id == id }),
-           selectedCategories.contains(match.category),
-           selectedEfforts.contains(match.effort) {
-            return match
-        }
-
-        return bestAvailableFilteredAdventure(excluding: [])
+        guard !adventures.isEmpty else { return nil }
+        return adventures.first(where: { $0.id == currentAdventureID })
     }
 
     func showFilters() {
@@ -136,12 +140,13 @@ final class ContentViewModel: ObservableObject {
         if let currentAdventureID {
             excludedIDs.insert(currentAdventureID)
         }
-        guard let next = bestAvailableFilteredAdventure(excluding: excludedIDs) else { return }
-        currentAdventureID = next.id
+        guard let result = selectAdventure(excluding: excludedIDs) else { return }
+        currentAdventureID = result.adventure.id
+        currentTier = result.tier
         dailyPickDate = Calendar.current.startOfDay(for: now)
-        dailyPickAdventureID = next.id
+        dailyPickAdventureID = result.adventure.id
         dailyPickLocationAwareDate = userCoordinate != nil ? dailyPickDate : nil
-        markSeen(next)
+        markSeen(result.adventure)
         persistAdventures()
         persistDailyPick()
     }
@@ -196,13 +201,14 @@ final class ContentViewModel: ObservableObject {
             return
         }
 
-        let pick = bestAvailableFilteredAdventure(excluding: [])
+        let result = selectAdventure(excluding: [])
         dailyPickDate = today
-        dailyPickAdventureID = pick?.id
-        dailyPickLocationAwareDate = (pick != nil && userCoordinate != nil) ? today : nil
-        currentAdventureID = pick?.id
-        if let pick {
-            markSeen(pick)
+        dailyPickAdventureID = result?.adventure.id
+        dailyPickLocationAwareDate = (result != nil && userCoordinate != nil) ? today : nil
+        currentAdventureID = result?.adventure.id
+        currentTier = result?.tier
+        if let adventure = result?.adventure {
+            markSeen(adventure)
         }
         persistAdventures()
         persistDailyPick()
@@ -225,11 +231,17 @@ final class ContentViewModel: ObservableObject {
         }
     }
 
-    func whyThisText(for adventure: Adventure) -> String {
-        if isWeakBestAvailableMatch(adventure) {
-            return "Best available match for current filters."
+    func whyThisText(for adventure: Adventure, tier: FallbackTier) -> String {
+        switch tier {
+        case .bestAvailable:
+            return "Best available option right now."
+        case .nearMatch:
+            return "Good option with a small compromise."
+        case .exact:
+            break
         }
 
+        // Context-aware explanation for exact-tier picks
         let timeContribution = timeScore(for: adventure) * RecommendationWeights.timeMatch
         let energyContribution = energyScore(for: adventure) * RecommendationWeights.energyMatch
         let weatherContribution = weatherScore(for: adventure) * RecommendationWeights.weatherMatch
@@ -288,7 +300,7 @@ final class ContentViewModel: ObservableObject {
         }
 
         guard !candidates.isEmpty else {
-            return "Best match for your current context."
+            return "Best fit for your current context."
         }
 
         let tieEpsilon = 0.02
@@ -337,6 +349,7 @@ final class ContentViewModel: ObservableObject {
         static let recentCompletionMultiplier = 0.2
         static let noRepeatWindowHours = 48.0
         static let pickThreshold = 0.35
+        static let nearMatchThreshold = 0.20
     }
 
     private enum WhyReasonKind {
@@ -498,19 +511,32 @@ final class ContentViewModel: ObservableObject {
         return scored.sorted { $0.score > $1.score }
     }
 
-    private func bestAvailableFilteredAdventure(excluding excludedIDs: Set<UUID>) -> Adventure? {
-        let primary = scoredAdventures(from: eligibleAdventures, excluding: excludedIDs)
-        if let bestPrimary = primary.first {
-            return bestPrimary.adventure
+    /// 3-tier fallback selection. Returns nil only if the dataset is entirely empty.
+    private func selectAdventure(excluding excludedIDs: Set<UUID>) -> RecommendationResult? {
+        let eligible = scoredAdventures(from: eligibleAdventures, excluding: excludedIDs)
+        let filtered = scoredAdventures(from: filteredAdventures, excluding: excludedIDs)
+
+        // Tier 1: filtered + not recently seen, score meets quality bar
+        if let best = eligible.first, best.score >= RecommendationWeights.pickThreshold {
+            return RecommendationResult(adventure: best.adventure, tier: .exact)
         }
 
-        let fallback = scoredAdventures(from: filteredAdventures, excluding: excludedIDs)
-        return fallback.first?.adventure
-    }
+        // Tier 2: filtered (recently seen allowed), still a reasonable match
+        if let best = filtered.first, best.score >= RecommendationWeights.nearMatchThreshold {
+            return RecommendationResult(adventure: best.adventure, tier: .nearMatch)
+        }
 
-    private func isWeakBestAvailableMatch(_ adventure: Adventure) -> Bool {
-        let adventureScore = score(adventure) + dailyJitter(adventure)
-        return adventureScore < RecommendationWeights.pickThreshold
+        // Tier 3: best available within filters, then across all adventures
+        if let best = filtered.first {
+            return RecommendationResult(adventure: best.adventure, tier: .bestAvailable)
+        }
+
+        let all = scoredAdventures(from: adventures, excluding: excludedIDs)
+        if let best = all.first {
+            return RecommendationResult(adventure: best.adventure, tier: .bestAvailable)
+        }
+
+        return nil
     }
 
     private func markSeen(_ adventure: Adventure) {

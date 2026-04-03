@@ -4,7 +4,6 @@ struct NoPickCardView: View {
     let cardBackground: Color
     let title: String
     let message: String
-    let onResetFilters: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -15,11 +14,6 @@ struct NoPickCardView: View {
             Text(message)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
-
-            Button("Reset Some Filters") {
-                onResetFilters()
-            }
-            .buttonStyle(.bordered)
         }
         .padding(14)
         .background(cardBackground, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
