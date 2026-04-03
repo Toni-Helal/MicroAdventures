@@ -76,6 +76,13 @@ struct ContentView: View {
             }
             .mapStyle(.standard)
             .ignoresSafeArea()
+            .overlay {
+                if viewModel.showCelebration {
+                    CompletionCelebrationView(streak: viewModel.celebrationStreak) {
+                        viewModel.showCelebration = false
+                    }
+                }
+            }
             .onAppear {
                 userLocationManager.requestPermissionAndLocation()
                 viewModel.ensureDailyPick(forceReselect: false)
@@ -152,6 +159,7 @@ struct ContentView: View {
         VStack(spacing: 1) {
             ContentHeaderView(
                 actionColor: actionIconColor,
+                activeFilterCount: viewModel.activeFilterCount,
                 onCenterMap: centerMapOnUser,
                 onOpenFilters: viewModel.showFilters
             )
@@ -169,6 +177,11 @@ struct ContentView: View {
                         viewModel.toggleCompleted(for: adventure)
                     }
                 )
+                .id(viewModel.currentAdventureID)
+                .transition(.asymmetric(
+                    insertion: .move(edge: .trailing).combined(with: .opacity),
+                    removal: .move(edge: .leading).combined(with: .opacity)
+                ))
                 .padding(.horizontal)
                 .padding(.top, 34)
             } else {
@@ -184,6 +197,7 @@ struct ContentView: View {
         .padding(.top, 98)
         .padding(.bottom, 6)
         .frame(height: topHeight, alignment: .top)
+        .animation(.spring(response: 0.35, dampingFraction: 0.8), value: viewModel.currentAdventureID)
     }
 
     private func focusOn(_ adventure: Adventure) {
