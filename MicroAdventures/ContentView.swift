@@ -16,7 +16,9 @@ struct ContentView: View {
 
     @State private var didApplyUserLocation = false
     @State private var pendingCenterOnUser = false
+    @State private var showingLocationAccessAlert = false
     @State private var cameraPosition: MapCameraPosition
+    @State private var detailAdventure: Adventure?
 
     private let timeTicker = Timer.publish(every: 300, on: .main, in: .common).autoconnect()
     private let topSectionHeightFactor: CGFloat = 0.33
@@ -50,6 +52,18 @@ struct ContentView: View {
         colorScheme == .dark ? Color.white.opacity(0.85) : Color.gray
     }
 
+    private var displayAdventure: Adventure? {
+        viewModel.currentAdventure ?? viewModel.bestAvailableAdventure
+    }
+
+    private var noPickTitle: String {
+        "No adventures available yet."
+    }
+
+    private var noPickMessage: String {
+        "Add adventure data to get recommendations."
+    }
+
     var body: some View {
         GeometryReader { proxy in
             let topHeight = proxy.size.height * topSectionHeightFactor
@@ -65,18 +79,24 @@ struct ContentView: View {
             .onAppear {
                 userLocationManager.requestPermissionAndLocation()
                 viewModel.ensureDailyPick(forceReselect: false)
-                if let adventure = viewModel.currentAdventure {
+                if let adventure = displayAdventure {
                     focusOn(adventure)
                 }
             }
             .onReceive(userLocationManager.$coordinate.compactMap { $0 }) { coordinate in
                 handleUserLocationUpdate(coordinate)
             }
+            .onReceive(userLocationManager.$authorizationStatus) { status in
+                if pendingCenterOnUser, status == .denied || status == .restricted {
+                    pendingCenterOnUser = false
+                    showingLocationAccessAlert = true
+                }
+            }
             .onReceive(timeTicker) { date in
                 viewModel.refreshTime(date)
             }
             .onChange(of: viewModel.currentAdventureID) { _, _ in
-                if let adventure = viewModel.currentAdventure {
+                if let adventure = displayAdventure {
                     focusOn(adventure)
                 }
             }
@@ -101,6 +121,14 @@ struct ContentView: View {
                     }
                 )
             }
+            .sheet(item: $detailAdventure) { adventure in
+                AdventureDetailView(adventure: adventure)
+            }
+            .alert("Location Access Needed", isPresented: $showingLocationAccessAlert) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text("Enable location access in Settings to center the map on your position.")
+            }
         }
     }
 
@@ -108,7 +136,7 @@ struct ContentView: View {
     private var mapLayer: some View {
         Map(position: $cameraPosition) {
             UserAnnotation()
-            if let adventure = viewModel.currentAdventure {
+            if let adventure = displayAdventure {
                 Annotation(adventure.locationName, coordinate: adventure.coordinate) {
                     Image(systemName: "mappin.circle.fill")
                         .font(.title2)
@@ -128,11 +156,14 @@ struct ContentView: View {
                 onOpenFilters: viewModel.showFilters
             )
 
-            if let adventure = viewModel.currentAdventure {
+            if let adventure = displayAdventure {
                 AdventureCardView(
                     adventure: adventure,
-                    whyText: viewModel.whyThisText(for: adventure),
+                    whyText: viewModel.whyThisText(for: adventure, tier: viewModel.currentTier ?? .bestAvailable),
                     style: cardStyle,
+                    onOpenDetails: {
+                        detailAdventure = adventure
+                    },
                     onAnotherPick: viewModel.rerollTodayPick,
                     onToggleCompleted: {
                         viewModel.toggleCompleted(for: adventure)
@@ -143,9 +174,8 @@ struct ContentView: View {
             } else {
                 NoPickCardView(
                     cardBackground: cardStyle.cardBackground,
-                    onResetFilters: {
-                        viewModel.resetFilters()
-                    }
+                    title: noPickTitle,
+                    message: noPickMessage
                 )
                 .padding(.horizontal)
                 .padding(.top, 34)
@@ -188,7 +218,13 @@ struct ContentView: View {
         pendingCenterOnUser = true
         userLocationManager.requestPermissionAndLocation()
 
-        guard let userCoordinate = userLocationManager.coordinate else { return }
+        guard let userCoordinate = userLocationManager.coordinate else {
+            if userLocationManager.isAccessDeniedOrRestricted {
+                pendingCenterOnUser = false
+                showingLocationAccessAlert = true
+            }
+            return
+        }
         didApplyUserLocation = true
         pendingCenterOnUser = false
         setCameraOnUser(userCoordinate)
@@ -206,7 +242,7 @@ struct ContentView: View {
 
         if !didApplyUserLocation {
             didApplyUserLocation = true
-            if let adventure = viewModel.currentAdventure {
+            if let adventure = displayAdventure {
                 focusOn(adventure)
             } else {
                 setCameraOnUser(coordinate)
@@ -215,6 +251,10 @@ struct ContentView: View {
     }
 }
 
-#Preview {
-    ContentView()
+#if DEBUG
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
 }
+#endif

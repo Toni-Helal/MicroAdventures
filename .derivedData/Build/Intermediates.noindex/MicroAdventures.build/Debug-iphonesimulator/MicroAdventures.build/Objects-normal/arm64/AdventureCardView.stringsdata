@@ -1,0 +1,72 @@
+{
+  "source": "/Users/antounhelal/Documents/Playground/MicroAdventures/MicroAdventures/AdventureCardView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Why this? %@",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 43
+        }
+      },
+      {
+        "comment": "",
+        "key": "Tap card for details",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 60
+        }
+      },
+      {
+        "comment": "",
+        "key": "Reroll today's adventure",
+        "location": {
+          "startingColumn": 37,
+          "startingLine": 82
+        }
+      },
+      {
+        "comment": "",
+        "key": "Adventure completed",
+        "location": {
+          "startingColumn": 61,
+          "startingLine": 98
+        }
+      },
+      {
+        "comment": "",
+        "key": "Mark adventure as completed",
+        "location": {
+          "startingColumn": 85,
+          "startingLine": 98
+        }
+      },
+      {
+        "comment": "",
+        "key": "Reroll Today",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 73
+        }
+      },
+      {
+        "comment": "",
+        "key": "Completed",
+        "location": {
+          "startingColumn": 50,
+          "startingLine": 89
+        }
+      },
+      {
+        "comment": "",
+        "key": "Done",
+        "location": {
+          "startingColumn": 64,
+          "startingLine": 89
+        }
+      }
+    ]
+  },
+  "version": 1
+}

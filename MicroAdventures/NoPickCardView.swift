@@ -2,22 +2,18 @@ import SwiftUI
 
 struct NoPickCardView: View {
     let cardBackground: Color
-    let onResetFilters: () -> Void
+    let title: String
+    let message: String
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("No pick for today.")
+            Text(title)
                 .font(.headline)
                 .foregroundStyle(.primary)
 
-            Text("No recommendation fits your current filters. Try relaxing constraints or check back tomorrow.")
+            Text(message)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
-
-            Button("Reset Filters") {
-                onResetFilters()
-            }
-            .buttonStyle(.bordered)
         }
         .padding(14)
         .background(cardBackground, in: RoundedRectangle(cornerRadius: 16, style: .continuous))

@@ -1,0 +1,32 @@
+{
+  "source": "/Users/antounhelal/Documents/Playground/MicroAdventures/MicroAdventures/QuickTuneBarView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Prefer nearby adventures",
+        "location": {
+          "startingColumn": 37,
+          "startingLine": 38
+        }
+      },
+      {
+        "comment": "",
+        "key": "%@ duration",
+        "location": {
+          "startingColumn": 41,
+          "startingLine": 16
+        }
+      },
+      {
+        "comment": "",
+        "key": "%@ energy",
+        "location": {
+          "startingColumn": 41,
+          "startingLine": 27
+        }
+      }
+    ]
+  },
+  "version": 1
+}

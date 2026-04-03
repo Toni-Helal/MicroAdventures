@@ -1,4 +1,4 @@
- internal import Combine
+internal import Combine
 import CoreLocation
 import Foundation
 
@@ -23,6 +23,17 @@ enum TimeBucket: String {
     }
 }
 
+enum FallbackTier {
+    case exact
+    case nearMatch
+    case bestAvailable
+}
+
+struct RecommendationResult {
+    let adventure: Adventure
+    let tier: FallbackTier
+}
+
 final class ContentViewModel: ObservableObject {
     @Published var selectedCategories: Set<Category> = Set(Category.allCases) {
         didSet { handleContextChanged() }
@@ -43,10 +54,12 @@ final class ContentViewModel: ObservableObject {
 
     @Published private(set) var timeBucket: TimeBucket = TimeBucket.current(for: Date())
     @Published private(set) var currentAdventureID: UUID?
+    @Published private(set) var currentTier: FallbackTier?
     @Published private(set) var adventures: [Adventure]
 
     private var dailyPickDate: Date?
     private var dailyPickAdventureID: UUID?
+    private var dailyPickLocationAwareDate: Date?
     private var now: Date = Date()
     private var daySeedValue: Int = Calendar.current.ordinality(of: .day, in: .year, for: Date()) ?? 0
     private var isBootstrapping = true
@@ -57,6 +70,7 @@ final class ContentViewModel: ObservableObject {
     private static let storageKey = "micro_adventures_store_v1"
     private static let dailyPickDateKey = "micro_adventures_daily_pick_date_v1"
     private static let dailyPickIdKey = "micro_adventures_daily_pick_id_v1"
+    private static let dailyPickLocationAwareDateKey = "micro_adventures_daily_pick_location_aware_date_v1"
 
     init() {
         let initialAdventures = Self.loadStoredAdventures()
@@ -65,6 +79,7 @@ final class ContentViewModel: ObservableObject {
         let storedPick = Self.loadStoredDailyPick()
         dailyPickDate = storedPick.date
         dailyPickAdventureID = storedPick.id
+        dailyPickLocationAwareDate = storedPick.locationAwareDate
 
         let today = Calendar.current.startOfDay(for: Date())
         currentAdventureID = storedPick.date.flatMap {
@@ -77,14 +92,17 @@ final class ContentViewModel: ObservableObject {
         adventures.first ?? AdventureSamples.all.first!
     }
 
+    var hasFilteredAdventures: Bool {
+        !filteredAdventures.isEmpty
+    }
+
+    var bestAvailableAdventure: Adventure? {
+        selectAdventure(excluding: [])?.adventure
+    }
+
     var currentAdventure: Adventure? {
-        if let id = currentAdventureID,
-           let match = adventures.first(where: { $0.id == id }),
-           selectedCategories.contains(match.category),
-           selectedEfforts.contains(match.effort) {
-            return match
-        }
-        return topCandidate()
+        guard !adventures.isEmpty else { return nil }
+        return adventures.first(where: { $0.id == currentAdventureID })
     }
 
     func showFilters() {
@@ -122,11 +140,13 @@ final class ContentViewModel: ObservableObject {
         if let currentAdventureID {
             excludedIDs.insert(currentAdventureID)
         }
-        guard let next = topCandidate(excluding: excludedIDs) else { return }
-        currentAdventureID = next.id
+        guard let result = selectAdventure(excluding: excludedIDs) else { return }
+        currentAdventureID = result.adventure.id
+        currentTier = result.tier
         dailyPickDate = Calendar.current.startOfDay(for: now)
-        dailyPickAdventureID = next.id
-        markSeen(next)
+        dailyPickAdventureID = result.adventure.id
+        dailyPickLocationAwareDate = userCoordinate != nil ? dailyPickDate : nil
+        markSeen(result.adventure)
         persistAdventures()
         persistDailyPick()
     }
@@ -140,6 +160,7 @@ final class ContentViewModel: ObservableObject {
             }
         }
         userCoordinate = coordinate
+        applyLocationAwareDailyPickIfNeeded()
     }
 
     func refreshTime(_ date: Date) {
@@ -180,12 +201,14 @@ final class ContentViewModel: ObservableObject {
             return
         }
 
-        let pick = topCandidate()
+        let result = selectAdventure(excluding: [])
         dailyPickDate = today
-        dailyPickAdventureID = pick?.id
-        currentAdventureID = pick?.id
-        if let pick {
-            markSeen(pick)
+        dailyPickAdventureID = result?.adventure.id
+        dailyPickLocationAwareDate = (result != nil && userCoordinate != nil) ? today : nil
+        currentAdventureID = result?.adventure.id
+        currentTier = result?.tier
+        if let adventure = result?.adventure {
+            markSeen(adventure)
         }
         persistAdventures()
         persistDailyPick()
@@ -208,7 +231,17 @@ final class ContentViewModel: ObservableObject {
         }
     }
 
-    func whyThisText(for adventure: Adventure) -> String {
+    func whyThisText(for adventure: Adventure, tier: FallbackTier) -> String {
+        switch tier {
+        case .bestAvailable:
+            return "Best available option right now."
+        case .nearMatch:
+            return "Good option with a small compromise."
+        case .exact:
+            break
+        }
+
+        // Context-aware explanation for exact-tier picks
         let timeContribution = timeScore(for: adventure) * RecommendationWeights.timeMatch
         let energyContribution = energyScore(for: adventure) * RecommendationWeights.energyMatch
         let weatherContribution = weatherScore(for: adventure) * RecommendationWeights.weatherMatch
@@ -267,7 +300,7 @@ final class ContentViewModel: ObservableObject {
         }
 
         guard !candidates.isEmpty else {
-            return "Best match for your current context."
+            return "Best fit for your current context."
         }
 
         let tieEpsilon = 0.02
@@ -316,6 +349,7 @@ final class ContentViewModel: ObservableObject {
         static let recentCompletionMultiplier = 0.2
         static let noRepeatWindowHours = 48.0
         static let pickThreshold = 0.35
+        static let nearMatchThreshold = 0.20
     }
 
     private enum WhyReasonKind {
@@ -468,31 +502,66 @@ final class ContentViewModel: ObservableObject {
         return (normalized - 0.5) * 0.02
     }
 
-    private func scoredAdventures() -> [(adventure: Adventure, score: Double)] {
-        let scored = eligibleAdventures.map { adventure in
+    private func scoredAdventures(from source: [Adventure], excluding excludedIDs: Set<UUID> = []) -> [(adventure: Adventure, score: Double)] {
+        let scored = source
+            .filter { !excludedIDs.contains($0.id) }
+            .map { adventure in
             (adventure: adventure, score: score(adventure) + dailyJitter(adventure))
         }
         return scored.sorted { $0.score > $1.score }
     }
 
-    private func topCandidate() -> Adventure? {
-        guard let top = scoredAdventures().first, top.score >= RecommendationWeights.pickThreshold else {
-            return nil
-        }
-        return top.adventure
-    }
+    /// 3-tier fallback selection. Returns nil only if the dataset is entirely empty.
+    private func selectAdventure(excluding excludedIDs: Set<UUID>) -> RecommendationResult? {
+        let eligible = scoredAdventures(from: eligibleAdventures, excluding: excludedIDs)
+        let filtered = scoredAdventures(from: filteredAdventures, excluding: excludedIDs)
 
-    private func topCandidate(excluding excludedIDs: Set<UUID>) -> Adventure? {
-        let candidate = scoredAdventures().first { !excludedIDs.contains($0.adventure.id) }
-        guard let candidate, candidate.score >= RecommendationWeights.pickThreshold else {
-            return nil
+        // Tier 1: filtered + not recently seen, score meets quality bar
+        if let best = eligible.first, best.score >= RecommendationWeights.pickThreshold {
+            return RecommendationResult(adventure: best.adventure, tier: .exact)
         }
-        return candidate.adventure
+
+        // Tier 2: filtered (recently seen allowed), still a reasonable match
+        if let best = filtered.first, best.score >= RecommendationWeights.nearMatchThreshold {
+            return RecommendationResult(adventure: best.adventure, tier: .nearMatch)
+        }
+
+        // Tier 3: best available within filters, then across all adventures
+        if let best = filtered.first {
+            return RecommendationResult(adventure: best.adventure, tier: .bestAvailable)
+        }
+
+        let all = scoredAdventures(from: adventures, excluding: excludedIDs)
+        if let best = all.first {
+            return RecommendationResult(adventure: best.adventure, tier: .bestAvailable)
+        }
+
+        return nil
     }
 
     private func markSeen(_ adventure: Adventure) {
         guard let index = adventures.firstIndex(where: { $0.id == adventure.id }) else { return }
         adventures[index].lastShownAt = now
+    }
+
+    private func applyLocationAwareDailyPickIfNeeded() {
+        guard userCoordinate != nil else { return }
+
+        let today = Calendar.current.startOfDay(for: Date())
+        let hasTodayPick = dailyPickDate.map { Calendar.current.isDate($0, inSameDayAs: today) } ?? false
+        guard hasTodayPick, dailyPickAdventureID != nil else { return }
+
+        let isAlreadyLocationAware = dailyPickLocationAwareDate.map {
+            Calendar.current.isDate($0, inSameDayAs: today)
+        } ?? false
+        guard !isAlreadyLocationAware else { return }
+
+        if showingFilters {
+            hasDeferredDailyReselect = true
+            return
+        }
+
+        ensureDailyPick(forceReselect: true)
     }
 
     private func persistAdventures() {
@@ -515,14 +584,22 @@ final class ContentViewModel: ObservableObject {
         } else {
             defaults.removeObject(forKey: Self.dailyPickIdKey)
         }
+
+        if let locationAwareDate = dailyPickLocationAwareDate {
+            defaults.set(locationAwareDate.timeIntervalSince1970, forKey: Self.dailyPickLocationAwareDateKey)
+        } else {
+            defaults.removeObject(forKey: Self.dailyPickLocationAwareDateKey)
+        }
     }
 
-    private static func loadStoredDailyPick() -> (date: Date?, id: UUID?) {
+    private static func loadStoredDailyPick() -> (date: Date?, id: UUID?, locationAwareDate: Date?) {
         let defaults = UserDefaults.standard
-        let timestamp = defaults.double(forKey: dailyPickDateKey)
-        let date = timestamp > 0 ? Date(timeIntervalSince1970: timestamp) : nil
+        let dailyPickTimestamp = defaults.double(forKey: dailyPickDateKey)
+        let date = dailyPickTimestamp > 0 ? Date(timeIntervalSince1970: dailyPickTimestamp) : nil
         let id = defaults.string(forKey: dailyPickIdKey).flatMap { UUID(uuidString: $0) }
-        return (date, id)
+        let locationAwareTimestamp = defaults.double(forKey: dailyPickLocationAwareDateKey)
+        let locationAwareDate = locationAwareTimestamp > 0 ? Date(timeIntervalSince1970: locationAwareTimestamp) : nil
+        return (date, id, locationAwareDate)
     }
 
     private static func loadStoredAdventures() -> [Adventure] {
@@ -560,6 +637,13 @@ final class ContentViewModel: ObservableObject {
                 existing.durationMinutes = sample.durationMinutes
                 existing.startPointName = sample.startPointName
                 existing.endPointName = sample.endPointName
+                existing.startLatitude = sample.startLatitude
+                existing.startLongitude = sample.startLongitude
+                existing.endLatitude = sample.endLatitude
+                existing.endLongitude = sample.endLongitude
+                existing.estimatedDistanceKm = sample.estimatedDistanceKm
+                existing.highlights = sample.highlights
+                existing.tips = sample.tips
                 existing.locationName = sample.locationName
                 existing.latitude = sample.latitude
                 existing.longitude = sample.longitude

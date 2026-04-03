@@ -1,0 +1,136 @@
+{
+  "source": "/Users/antounhelal/Documents/Playground/MicroAdventures/MicroAdventures/AdventureFiltersView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Filters",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 111
+        }
+      },
+      {
+        "comment": "",
+        "key": "Categories",
+        "location": {
+          "startingColumn": 25,
+          "startingLine": 38
+        }
+      },
+      {
+        "comment": "",
+        "key": "Effort Level",
+        "location": {
+          "startingColumn": 25,
+          "startingLine": 61
+        }
+      },
+      {
+        "comment": "",
+        "key": "Context",
+        "location": {
+          "startingColumn": 25,
+          "startingLine": 84
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld selected",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 40
+        }
+      },
+      {
+        "comment": "",
+        "key": "Select All",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 44
+        }
+      },
+      {
+        "comment": "",
+        "key": "Clear",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 46
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld selected",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 63
+        }
+      },
+      {
+        "comment": "",
+        "key": "Select All",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 67
+        }
+      },
+      {
+        "comment": "",
+        "key": "Clear",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 69
+        }
+      },
+      {
+        "comment": "",
+        "key": "Time: %@",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 106
+        }
+      },
+      {
+        "comment": "",
+        "key": "Energy",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 85
+        }
+      },
+      {
+        "comment": "",
+        "key": "Time Available",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 92
+        }
+      },
+      {
+        "comment": "",
+        "key": "Weather",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 99
+        }
+      },
+      {
+        "comment": "",
+        "key": "Close",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 114
+        }
+      },
+      {
+        "comment": "",
+        "key": "Apply",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 117
+        }
+      }
+    ]
+  },
+  "version": 1
+}
