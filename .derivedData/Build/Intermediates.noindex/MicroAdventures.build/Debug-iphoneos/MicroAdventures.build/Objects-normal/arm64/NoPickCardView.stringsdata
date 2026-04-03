@@ -1,0 +1,32 @@
+{
+  "source": "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/MicroAdventures/NoPickCardView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "No pick for today.",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 9
+        }
+      },
+      {
+        "comment": "",
+        "key": "No recommendation fits your current filters. Try relaxing constraints or check back tomorrow.",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 13
+        }
+      },
+      {
+        "comment": "",
+        "key": "Reset Filters",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 17
+        }
+      }
+    ]
+  },
+  "version": 1
+}

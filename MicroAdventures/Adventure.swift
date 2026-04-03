@@ -161,7 +161,7 @@ struct AdventureSamples {
             startPointName: "Calabazas Park Entrance",
             endPointName: "Calabazas Park Entrance",
             locationName: "Calabazas Creek Loop",
-            latitude: 48.9034,
+            latitude: 48.9274,
             longitude: 2.2415,
             isCompleted: false
         ),

@@ -16,6 +16,7 @@ struct ContentView: View {
 
     @State private var didApplyUserLocation = false
     @State private var pendingCenterOnUser = false
+    @State private var showingLocationAccessAlert = false
     @State private var cameraPosition: MapCameraPosition
 
     private let timeTicker = Timer.publish(every: 300, on: .main, in: .common).autoconnect()
@@ -72,6 +73,9 @@ struct ContentView: View {
             .onReceive(userLocationManager.$coordinate.compactMap { $0 }) { coordinate in
                 handleUserLocationUpdate(coordinate)
             }
+            .onReceive(userLocationManager.$authorizationStatus) { status in
+                handleAuthorizationStatusUpdate(status)
+            }
             .onReceive(timeTicker) { date in
                 viewModel.refreshTime(date)
             }
@@ -100,6 +104,11 @@ struct ContentView: View {
                         viewModel.hideFilters()
                     }
                 )
+            }
+            .alert("Location access needed", isPresented: $showingLocationAccessAlert) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text("Allow location access in Settings to center the map on your position.")
             }
         }
     }
@@ -188,6 +197,12 @@ struct ContentView: View {
         pendingCenterOnUser = true
         userLocationManager.requestPermissionAndLocation()
 
+        if userLocationManager.authorizationStatus == .denied || userLocationManager.authorizationStatus == .restricted {
+            pendingCenterOnUser = false
+            showingLocationAccessAlert = true
+            return
+        }
+
         guard let userCoordinate = userLocationManager.coordinate else { return }
         didApplyUserLocation = true
         pendingCenterOnUser = false
@@ -211,6 +226,15 @@ struct ContentView: View {
             } else {
                 setCameraOnUser(coordinate)
             }
+        }
+    }
+
+    private func handleAuthorizationStatusUpdate(_ status: CLAuthorizationStatus) {
+        guard pendingCenterOnUser else { return }
+
+        if status == .denied || status == .restricted {
+            pendingCenterOnUser = false
+            showingLocationAccessAlert = true
         }
     }
 }

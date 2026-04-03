@@ -1,0 +1,109 @@
+{
+  "" : {
+    "diagnostics" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/MicroAdventures-primary.dia",
+    "emit-module-dependencies" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/MicroAdventures-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/MicroAdventures-primary-emit-module.dia",
+    "pch" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/MicroAdventures-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/MicroAdventures-primary.swiftdeps"
+  },
+  "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "const-values" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftconstvalues",
+    "dependencies" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/GeneratedAssetSymbols.d",
+    "diagnostics" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/GeneratedAssetSymbols.dia",
+    "index-unit-output-path" : "/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "swift-dependencies" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftdeps",
+    "swiftmodule" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/GeneratedAssetSymbols~partial.swiftmodule"
+  },
+  "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/MicroAdventures/Adventure.swift" : {
+    "const-values" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/Adventure.swiftconstvalues",
+    "dependencies" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/Adventure.d",
+    "diagnostics" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/Adventure.dia",
+    "index-unit-output-path" : "/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/Adventure.o",
+    "llvm-bc" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/Adventure.bc",
+    "object" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/Adventure.o",
+    "swift-dependencies" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/Adventure.swiftdeps",
+    "swiftmodule" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/Adventure~partial.swiftmodule"
+  },
+  "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/MicroAdventures/AdventureCardView.swift" : {
+    "const-values" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/AdventureCardView.swiftconstvalues",
+    "dependencies" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/AdventureCardView.d",
+    "diagnostics" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/AdventureCardView.dia",
+    "index-unit-output-path" : "/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/AdventureCardView.o",
+    "llvm-bc" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/AdventureCardView.bc",
+    "object" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/AdventureCardView.o",
+    "swift-dependencies" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/AdventureCardView.swiftdeps",
+    "swiftmodule" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/AdventureCardView~partial.swiftmodule"
+  },
+  "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/MicroAdventures/AdventureFiltersView.swift" : {
+    "const-values" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/AdventureFiltersView.swiftconstvalues",
+    "dependencies" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/AdventureFiltersView.d",
+    "diagnostics" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/AdventureFiltersView.dia",
+    "index-unit-output-path" : "/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/AdventureFiltersView.o",
+    "llvm-bc" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/AdventureFiltersView.bc",
+    "object" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/AdventureFiltersView.o",
+    "swift-dependencies" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/AdventureFiltersView.swiftdeps",
+    "swiftmodule" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/AdventureFiltersView~partial.swiftmodule"
+  },
+  "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/MicroAdventures/ContentHeaderView.swift" : {
+    "const-values" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/ContentHeaderView.swiftconstvalues",
+    "dependencies" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/ContentHeaderView.d",
+    "diagnostics" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/ContentHeaderView.dia",
+    "index-unit-output-path" : "/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/ContentHeaderView.o",
+    "llvm-bc" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/ContentHeaderView.bc",
+    "object" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/ContentHeaderView.o",
+    "swift-dependencies" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/ContentHeaderView.swiftdeps",
+    "swiftmodule" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/ContentHeaderView~partial.swiftmodule"
+  },
+  "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/MicroAdventures/ContentView.swift" : {
+    "const-values" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/ContentView.swiftconstvalues",
+    "dependencies" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/ContentView.d",
+    "diagnostics" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/ContentView.dia",
+    "index-unit-output-path" : "/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/ContentView.o",
+    "llvm-bc" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/ContentView.bc",
+    "object" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/ContentView.o",
+    "swift-dependencies" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/ContentView.swiftdeps",
+    "swiftmodule" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/ContentView~partial.swiftmodule"
+  },
+  "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/MicroAdventures/ContentViewModel.swift" : {
+    "const-values" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/ContentViewModel.swiftconstvalues",
+    "dependencies" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/ContentViewModel.d",
+    "diagnostics" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/ContentViewModel.dia",
+    "index-unit-output-path" : "/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/ContentViewModel.o",
+    "llvm-bc" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/ContentViewModel.bc",
+    "object" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/ContentViewModel.o",
+    "swift-dependencies" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/ContentViewModel.swiftdeps",
+    "swiftmodule" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/ContentViewModel~partial.swiftmodule"
+  },
+  "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/MicroAdventures/MicroAdventuresApp.swift" : {
+    "const-values" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/MicroAdventuresApp.swiftconstvalues",
+    "dependencies" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/MicroAdventuresApp.d",
+    "diagnostics" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/MicroAdventuresApp.dia",
+    "index-unit-output-path" : "/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/MicroAdventuresApp.o",
+    "llvm-bc" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/MicroAdventuresApp.bc",
+    "object" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/MicroAdventuresApp.o",
+    "swift-dependencies" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/MicroAdventuresApp.swiftdeps",
+    "swiftmodule" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/MicroAdventuresApp~partial.swiftmodule"
+  },
+  "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/MicroAdventures/NoPickCardView.swift" : {
+    "const-values" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/NoPickCardView.swiftconstvalues",
+    "dependencies" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/NoPickCardView.d",
+    "diagnostics" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/NoPickCardView.dia",
+    "index-unit-output-path" : "/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/NoPickCardView.o",
+    "llvm-bc" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/NoPickCardView.bc",
+    "object" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/NoPickCardView.o",
+    "swift-dependencies" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/NoPickCardView.swiftdeps",
+    "swiftmodule" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/NoPickCardView~partial.swiftmodule"
+  },
+  "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/MicroAdventures/UserLocationManager.swift" : {
+    "const-values" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/UserLocationManager.swiftconstvalues",
+    "dependencies" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/UserLocationManager.d",
+    "diagnostics" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/UserLocationManager.dia",
+    "index-unit-output-path" : "/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/UserLocationManager.o",
+    "llvm-bc" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/UserLocationManager.bc",
+    "object" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/UserLocationManager.o",
+    "swift-dependencies" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/UserLocationManager.swiftdeps",
+    "swiftmodule" : "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/.derivedData/Build/Intermediates.noindex/MicroAdventures.build/Debug-iphoneos/MicroAdventures.build/Objects-normal/arm64/UserLocationManager~partial.swiftmodule"
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "source": "/Users/antounhelal/.codex/worktrees/5e9e/MicroAdventures/MicroAdventures/AdventureCardView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Why this? %@",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 41
+        }
+      },
+      {
+        "comment": "",
+        "key": "Reroll today's adventure",
+        "location": {
+          "startingColumn": 37,
+          "startingLine": 71
+        }
+      },
+      {
+        "comment": "",
+        "key": "Adventure completed",
+        "location": {
+          "startingColumn": 61,
+          "startingLine": 87
+        }
+      },
+      {
+        "comment": "",
+        "key": "Mark adventure as completed",
+        "location": {
+          "startingColumn": 85,
+          "startingLine": 87
+        }
+      },
+      {
+        "comment": "",
+        "key": "Reroll Today",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 62
+        }
+      },
+      {
+        "comment": "",
+        "key": "Completed",
+        "location": {
+          "startingColumn": 50,
+          "startingLine": 78
+        }
+      },
+      {
+        "comment": "",
+        "key": "Done",
+        "location": {
+          "startingColumn": 64,
+          "startingLine": 78
+        }
+      }
+    ]
+  },
+  "version": 1
+}

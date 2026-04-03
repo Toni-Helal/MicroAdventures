@@ -4,13 +4,16 @@ import Foundation
 
 final class UserLocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var coordinate: CLLocationCoordinate2D?
+    @Published private(set) var authorizationStatus: CLAuthorizationStatus
 
     private let manager = CLLocationManager()
 
     override init() {
+        authorizationStatus = .notDetermined
         super.init()
         manager.delegate = self
         manager.desiredAccuracy = kCLLocationAccuracyHundredMeters
+        authorizationStatus = manager.authorizationStatus
     }
 
     func requestPermissionAndLocation() {
@@ -22,6 +25,7 @@ final class UserLocationManager: NSObject, ObservableObject, CLLocationManagerDe
     }
 
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        authorizationStatus = manager.authorizationStatus
         if manager.authorizationStatus == .authorizedWhenInUse || manager.authorizationStatus == .authorizedAlways {
             manager.requestLocation()
         }
