@@ -16,6 +16,7 @@ struct ContentView: View {
 
     @State private var didApplyUserLocation = false
     @State private var pendingCenterOnUser = false
+    @State private var showingLocationAccessAlert = false
     @State private var cameraPosition: MapCameraPosition
     @State private var detailAdventure: Adventure?
 
@@ -85,6 +86,12 @@ struct ContentView: View {
             .onReceive(userLocationManager.$coordinate.compactMap { $0 }) { coordinate in
                 handleUserLocationUpdate(coordinate)
             }
+            .onReceive(userLocationManager.$authorizationStatus) { status in
+                if pendingCenterOnUser, status == .denied || status == .restricted {
+                    pendingCenterOnUser = false
+                    showingLocationAccessAlert = true
+                }
+            }
             .onReceive(timeTicker) { date in
                 viewModel.refreshTime(date)
             }
@@ -116,6 +123,11 @@ struct ContentView: View {
             }
             .sheet(item: $detailAdventure) { adventure in
                 AdventureDetailView(adventure: adventure)
+            }
+            .alert("Location Access Needed", isPresented: $showingLocationAccessAlert) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text("Enable location access in Settings to center the map on your position.")
             }
         }
     }
@@ -206,7 +218,13 @@ struct ContentView: View {
         pendingCenterOnUser = true
         userLocationManager.requestPermissionAndLocation()
 
-        guard let userCoordinate = userLocationManager.coordinate else { return }
+        guard let userCoordinate = userLocationManager.coordinate else {
+            if userLocationManager.isAccessDeniedOrRestricted {
+                pendingCenterOnUser = false
+                showingLocationAccessAlert = true
+            }
+            return
+        }
         didApplyUserLocation = true
         pendingCenterOnUser = false
         setCameraOnUser(userCoordinate)
