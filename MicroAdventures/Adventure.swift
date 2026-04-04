@@ -1,5 +1,6 @@
 import Foundation
 import CoreLocation
+import SwiftUI
 
 enum Category: String, CaseIterable, Identifiable, Codable, Sendable {
     case nature = "Nature"
@@ -15,6 +16,15 @@ enum Category: String, CaseIterable, Identifiable, Codable, Sendable {
         case .water:  return "drop.fill"
         case .night:  return "moon.fill"
         case .family: return "figure.2.and.child.holdinghands"
+        }
+    }
+    var tintColor: Color {
+        switch self {
+        case .nature: return Color.green.opacity(0.15)
+        case .urban:  return Color.blue.opacity(0.12)
+        case .water:  return Color.cyan.opacity(0.15)
+        case .night:  return Color.indigo.opacity(0.15)
+        case .family: return Color.orange.opacity(0.12)
         }
     }
 }
@@ -280,6 +290,357 @@ struct AdventureSamples {
             locationName: "Stade Yves-du-Manoir, Colombes",
             latitude: 48.8919,
             longitude: 2.2370,
+            isCompleted: false
+        ),
+
+        // --- 8 ---
+        Adventure(
+            id: UUID(uuidString: "A1B2C3D4-E5F6-7890-ABCD-EF1234567801")!,
+            title: "Fontaine de Colombes Morning Sketch",
+            description: "Walk to the central fountain near Place du Général de Gaulle and sit for exactly 10 minutes observing one detail you have never noticed before.",
+            decisionTags: ["low-energy", "morning", "outdoor", "short"],
+            flavorTags: ["stillness", "micro-hook", "observation"],
+            category: .urban,
+            effort: .easy,
+            recommendedEnergy: .low,
+            bestTimeWindow: .morning,
+            durationMinutes: 15,
+            startPointName: "Place du Général de Gaulle",
+            endPointName: "Place du Général de Gaulle",
+            startLatitude: 48.9222,
+            startLongitude: 2.2558,
+            endLatitude: 48.9222,
+            endLongitude: 2.2558,
+            estimatedDistanceKm: 0.5,
+            highlights: ["Central town square", "Quiet early morning crowd"],
+            tips: ["Bring a small notebook", "Pick one architectural detail and study it"],
+            locationName: "Place du Général de Gaulle, Colombes",
+            latitude: 48.9222,
+            longitude: 2.2558,
+            isCompleted: false
+        ),
+
+        // --- 9 ---
+        Adventure(
+            id: UUID(uuidString: "A1B2C3D4-E5F6-7890-ABCD-EF1234567802")!,
+            title: "Canal de la Jonction Slow Walk",
+            description: "Follow the Canal de la Jonction path from the lock to the Seine confluence, stopping once to count boats or birds you see on the water.",
+            decisionTags: ["low-energy", "afternoon", "outdoor", "water"],
+            flavorTags: ["flow", "micro-hook", "calm"],
+            category: .water,
+            effort: .easy,
+            recommendedEnergy: .low,
+            bestTimeWindow: .afternoon,
+            durationMinutes: 35,
+            startPointName: "Écluse de Colombes",
+            endPointName: "Confluence Seine-Jonction",
+            startLatitude: 48.9172,
+            startLongitude: 2.2610,
+            endLatitude: 48.9145,
+            endLongitude: 2.2588,
+            estimatedDistanceKm: 1.8,
+            highlights: ["Flat towpath along the canal", "Occasional barge traffic"],
+            tips: ["Go slowly — this is not a workout", "Stop at the midpoint bench if available"],
+            locationName: "Canal de la Jonction, Colombes",
+            latitude: 48.9172,
+            longitude: 2.2610,
+            isCompleted: false
+        ),
+
+        // --- 10 ---
+        Adventure(
+            id: UUID(uuidString: "A1B2C3D4-E5F6-7890-ABCD-EF1234567803")!,
+            title: "Rond-Point des Fossés Night Circuit",
+            description: "Do three slow clockwise loops around the Rond-Point des Fossés at night, each time noticing something new in the light.",
+            decisionTags: ["low-energy", "night", "outdoor", "walkable"],
+            flavorTags: ["night-light", "micro-hook", "reset"],
+            category: .night,
+            effort: .easy,
+            recommendedEnergy: .low,
+            bestTimeWindow: .night,
+            durationMinutes: 20,
+            startPointName: "Rond-Point des Fossés",
+            endPointName: "Rond-Point des Fossés",
+            startLatitude: 48.9261,
+            startLongitude: 2.2494,
+            endLatitude: 48.9261,
+            endLongitude: 2.2494,
+            estimatedDistanceKm: 1.2,
+            highlights: ["Street-lit roundabout circuit", "Quiet residential atmosphere at night"],
+            tips: ["Wear something visible", "Keep pace slow — this is a sensory walk"],
+            locationName: "Rond-Point des Fossés, Colombes",
+            latitude: 48.9261,
+            longitude: 2.2494,
+            isCompleted: false
+        ),
+
+        // --- 11 ---
+        Adventure(
+            id: UUID(uuidString: "A1B2C3D4-E5F6-7890-ABCD-EF1234567804")!,
+            title: "Jardin des Provinces Family Scavenger",
+            description: "Visit Jardin des Provinces with family and find five things: something red, something that moves, something rough, something small, something round.",
+            decisionTags: ["low-energy", "morning", "outdoor", "family", "game"],
+            flavorTags: ["playful", "micro-hook", "shared"],
+            category: .family,
+            effort: .easy,
+            recommendedEnergy: .low,
+            bestTimeWindow: .morning,
+            durationMinutes: 30,
+            startPointName: "Jardin des Provinces - Entrée principale",
+            endPointName: "Jardin des Provinces - Entrée principale",
+            startLatitude: 48.9249,
+            startLongitude: 2.2636,
+            endLatitude: 48.9249,
+            endLongitude: 2.2636,
+            estimatedDistanceKm: 0.8,
+            highlights: ["Green playground area for kids", "Easy flat terrain"],
+            tips: ["Print a small checklist if possible", "Let the child lead the search"],
+            locationName: "Jardin des Provinces, Colombes",
+            latitude: 48.9249,
+            longitude: 2.2636,
+            isCompleted: false
+        ),
+
+        // --- 12 ---
+        Adventure(
+            id: UUID(uuidString: "A1B2C3D4-E5F6-7890-ABCD-EF1234567805")!,
+            title: "Seine Bank Pebble Hunt",
+            description: "Walk down to the Seine bank near Pont de Colombes and find three interesting pebbles — keep one, throw one, leave one.",
+            decisionTags: ["low-energy", "afternoon", "outdoor", "water", "tactile"],
+            flavorTags: ["grounding", "micro-hook", "ritual"],
+            category: .water,
+            effort: .easy,
+            recommendedEnergy: .low,
+            bestTimeWindow: .afternoon,
+            durationMinutes: 25,
+            startPointName: "Berge de Seine - Pont de Colombes",
+            endPointName: "Berge de Seine - Pont de Colombes",
+            startLatitude: 48.9238,
+            startLongitude: 2.2452,
+            endLatitude: 48.9238,
+            endLongitude: 2.2452,
+            estimatedDistanceKm: 0.6,
+            highlights: ["Direct access to the Seine bank", "Calm riverside atmosphere"],
+            tips: ["Low tide gives more bank access", "Best in dry weather"],
+            locationName: "Berge de Seine, Colombes",
+            latitude: 48.9238,
+            longitude: 2.2452,
+            isCompleted: false
+        ),
+
+        // --- 13 ---
+        Adventure(
+            id: UUID(uuidString: "A1B2C3D4-E5F6-7890-ABCD-EF1234567806")!,
+            title: "Cimetière Communal Quiet Walk",
+            description: "Walk the main allée of the Cimetière Communal de Colombes at a slow pace and read five inscriptions, noticing the oldest date you can find.",
+            decisionTags: ["low-energy", "afternoon", "outdoor", "reflective"],
+            flavorTags: ["stillness", "presence", "grounding"],
+            category: .nature,
+            effort: .easy,
+            recommendedEnergy: .low,
+            bestTimeWindow: .afternoon,
+            durationMinutes: 25,
+            startPointName: "Entrée Cimetière Communal",
+            endPointName: "Entrée Cimetière Communal",
+            startLatitude: 48.9195,
+            startLongitude: 2.2621,
+            endLatitude: 48.9195,
+            endLongitude: 2.2621,
+            estimatedDistanceKm: 1.0,
+            highlights: ["Peaceful green space", "Historical inscriptions"],
+            tips: ["Enter quietly and stay on the main path", "Best visited mid-week"],
+            locationName: "Cimetière Communal, Colombes",
+            latitude: 48.9195,
+            longitude: 2.2621,
+            isCompleted: false
+        ),
+
+        // --- 14 ---
+        Adventure(
+            id: UUID(uuidString: "A1B2C3D4-E5F6-7890-ABCD-EF1234567807")!,
+            title: "Marché de Colombes Sensory Loop",
+            description: "Walk through the Marché de Colombes and identify three smells, two textures, and one unexpected colour before you leave.",
+            decisionTags: ["low-energy", "morning", "outdoor", "urban", "sensory"],
+            flavorTags: ["vibrant", "micro-hook", "presence"],
+            category: .urban,
+            effort: .easy,
+            recommendedEnergy: .medium,
+            bestTimeWindow: .morning,
+            durationMinutes: 20,
+            startPointName: "Marché de Colombes - Entrée Rue de Paris",
+            endPointName: "Marché de Colombes - Sortie Avenue de la République",
+            startLatitude: 48.9218,
+            startLongitude: 2.2540,
+            endLatitude: 48.9226,
+            endLongitude: 2.2515,
+            estimatedDistanceKm: 0.4,
+            highlights: ["Local producers section", "Lively morning atmosphere"],
+            tips: ["Market open Tue/Thu/Sat mornings only", "Go without a shopping list"],
+            locationName: "Marché de Colombes",
+            latitude: 48.9218,
+            longitude: 2.2540,
+            isCompleted: false
+        ),
+
+        // --- 15 ---
+        Adventure(
+            id: UUID(uuidString: "A1B2C3D4-E5F6-7890-ABCD-EF1234567808")!,
+            title: "Parc Henri Barbusse Barefoot Reset",
+            description: "Find a patch of grass at Parc Henri Barbusse and stand barefoot for two minutes, breathing slowly. Then walk one slow lap.",
+            decisionTags: ["low-energy", "afternoon", "outdoor", "nature", "grounding"],
+            flavorTags: ["reset", "body", "micro-hook"],
+            category: .nature,
+            effort: .easy,
+            recommendedEnergy: .low,
+            bestTimeWindow: .afternoon,
+            durationMinutes: 20,
+            startPointName: "Parc Henri Barbusse - Entrée principale",
+            endPointName: "Parc Henri Barbusse - Entrée principale",
+            startLatitude: 48.9310,
+            startLongitude: 2.2511,
+            endLatitude: 48.9310,
+            endLongitude: 2.2511,
+            estimatedDistanceKm: 0.7,
+            highlights: ["Open grass lawns", "Quiet neighbourhood park"],
+            tips: ["Check grass is dry before removing shoes", "Avoid post-rain if possible"],
+            locationName: "Parc Henri Barbusse, Colombes",
+            latitude: 48.9310,
+            longitude: 2.2511,
+            isCompleted: false
+        ),
+
+        // --- 16 ---
+        Adventure(
+            id: UUID(uuidString: "A1B2C3D4-E5F6-7890-ABCD-EF1234567809")!,
+            title: "Rue du Général Leclerc Architecture Hunt",
+            description: "Walk the length of Rue du Général Leclerc from the station to the market and photograph exactly four architectural details: a door, a window, a number, and something symmetrical.",
+            decisionTags: ["medium-energy", "morning", "outdoor", "urban", "walkable"],
+            flavorTags: ["curiosity", "micro-hook", "visual"],
+            category: .urban,
+            effort: .moderate,
+            recommendedEnergy: .medium,
+            bestTimeWindow: .morning,
+            durationMinutes: 30,
+            startPointName: "Gare de Colombes",
+            endPointName: "Marché de Colombes",
+            startLatitude: 48.9235,
+            startLongitude: 2.2529,
+            endLatitude: 48.9218,
+            endLongitude: 2.2540,
+            estimatedDistanceKm: 1.1,
+            highlights: ["Mix of Haussmann and modern facades", "Active street life"],
+            tips: ["Shoot in portrait orientation for doors", "Take your time — this is not a race"],
+            locationName: "Rue du Général Leclerc, Colombes",
+            latitude: 48.9235,
+            longitude: 2.2529,
+            isCompleted: false
+        ),
+
+        // --- 17 ---
+        Adventure(
+            id: UUID(uuidString: "A1B2C3D4-E5F6-7890-ABCD-EF1234567810")!,
+            title: "Colline de Parmentier Evening Run",
+            description: "Run the gentle slope of Rue Parmentier from bottom to top, walk back down, and repeat three times. Stop before you feel tired.",
+            decisionTags: ["high-energy", "evening", "outdoor", "running"],
+            flavorTags: ["effort", "micro-hook", "quick-win"],
+            category: .urban,
+            effort: .hard,
+            recommendedEnergy: .high,
+            bestTimeWindow: .evening,
+            durationMinutes: 18,
+            startPointName: "Bas de la Rue Parmentier",
+            endPointName: "Haut de la Rue Parmentier",
+            startLatitude: 48.9247,
+            startLongitude: 2.2462,
+            endLatitude: 48.9268,
+            endLongitude: 2.2443,
+            estimatedDistanceKm: 1.5,
+            highlights: ["Moderate gradient, safe pavement", "Short enough to repeat"],
+            tips: ["Warm up for 2 minutes walking first", "Focus on form, not speed"],
+            locationName: "Rue Parmentier, Colombes",
+            latitude: 48.9247,
+            longitude: 2.2462,
+            isCompleted: false
+        ),
+
+        // --- 18 ---
+        Adventure(
+            id: UUID(uuidString: "A1B2C3D4-E5F6-7890-ABCD-EF1234567811")!,
+            title: "Ile Marante Morning Yoga",
+            description: "Find a flat spot on Ile Marante and do 5 minutes of stretching or yoga when the light is just rising. No phone except for a timer.",
+            decisionTags: ["low-energy", "morning", "outdoor", "nature", "mindfulness"],
+            flavorTags: ["dawn", "body", "micro-hook"],
+            category: .nature,
+            effort: .easy,
+            recommendedEnergy: .low,
+            bestTimeWindow: .morning,
+            durationMinutes: 15,
+            startPointName: "Ile Marante Entrance",
+            endPointName: "Ile Marante Entrance",
+            startLatitude: 48.9189,
+            startLongitude: 2.2521,
+            endLatitude: 48.9189,
+            endLongitude: 2.2521,
+            estimatedDistanceKm: 0.5,
+            highlights: ["Quiet island setting", "River sounds as background"],
+            tips: ["Bring a small mat or a towel", "Best before 8am when it's quiet"],
+            locationName: "Ile Marante, Colombes",
+            latitude: 48.9189,
+            longitude: 2.2521,
+            isCompleted: false
+        ),
+
+        // --- 19 ---
+        Adventure(
+            id: UUID(uuidString: "A1B2C3D4-E5F6-7890-ABCD-EF1234567812")!,
+            title: "Sous la Pluie Urban Shelter Hop",
+            description: "On a rainy day, hop between three sheltered spots in central Colombes (covered bus stop, arcade, supermarket entrance) and spend 5 minutes at each before continuing.",
+            decisionTags: ["low-energy", "rain", "urban", "covered", "walkable"],
+            flavorTags: ["cozy", "micro-hook", "rainy-day"],
+            category: .urban,
+            effort: .easy,
+            recommendedEnergy: .low,
+            bestTimeWindow: .afternoon,
+            durationMinutes: 25,
+            startPointName: "Gare de Colombes (Abri Bus)",
+            endPointName: "Centre Commercial Auchan Colombes",
+            startLatitude: 48.9235,
+            startLongitude: 2.2529,
+            endLatitude: 48.9208,
+            endLongitude: 2.2492,
+            estimatedDistanceKm: 0.9,
+            highlights: ["No rain gear needed", "Observe the city from shelter"],
+            tips: ["Best on a light rain day, not a storm", "Pick three spots before you leave home"],
+            locationName: "Centre-ville de Colombes",
+            latitude: 48.9235,
+            longitude: 2.2529,
+            isCompleted: false
+        ),
+
+        // --- 20 ---
+        Adventure(
+            id: UUID(uuidString: "A1B2C3D4-E5F6-7890-ABCD-EF1234567813")!,
+            title: "Coucher de Soleil sur les Berges",
+            description: "Reach the Seine bank near Parc Pierre Lagravere exactly 20 minutes before sunset and stay until the sky finishes changing colour. Do not use your phone during this time.",
+            decisionTags: ["low-energy", "evening", "outdoor", "water", "meditative"],
+            flavorTags: ["golden-hour", "presence", "micro-hook"],
+            category: .water,
+            effort: .easy,
+            recommendedEnergy: .low,
+            bestTimeWindow: .evening,
+            durationMinutes: 40,
+            startPointName: "Parc Pierre Lagravere - Bord de Seine",
+            endPointName: "Parc Pierre Lagravere - Bord de Seine",
+            startLatitude: 48.9295,
+            startLongitude: 2.2338,
+            endLatitude: 48.9295,
+            endLongitude: 2.2338,
+            estimatedDistanceKm: 1.0,
+            highlights: ["Direct Seine view facing west", "Golden-hour reflection on water"],
+            tips: ["Check sunset time in advance", "Bring a light layer — evenings get cool"],
+            locationName: "Berge de la Seine, Parc Pierre Lagravere",
+            latitude: 48.9295,
+            longitude: 2.2338,
             isCompleted: false
         )
     ]

@@ -149,6 +149,15 @@ final class ContentViewModel: ObservableObject {
         return adventures.first(where: { $0.id == currentAdventureID })
     }
 
+    func distanceText(for adventure: Adventure) -> String? {
+        guard let coord = userCoordinate else { return nil }
+        let userLoc      = CLLocation(latitude: coord.latitude,      longitude: coord.longitude)
+        let adventureLoc = CLLocation(latitude: adventure.latitude,  longitude: adventure.longitude)
+        let km = userLoc.distance(from: adventureLoc) / 1000
+        if km < 1 { return "\(Int(km * 1000)) m away" }
+        return String(format: "%.1f km away", km)
+    }
+
     func showFilters() {
         showingFilters = true
     }
@@ -693,14 +702,32 @@ final class ContentViewModel: ObservableObject {
 
     private static func loadStoredAdventures() -> [Adventure] {
         let defaults = UserDefaults.standard
-        guard let data = defaults.data(forKey: storageKey) else { return AdventureSamples.all }
+        guard let data = defaults.data(forKey: storageKey) else {
+            return validateAndFilter(AdventureSamples.all)
+        }
 
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
         guard let stored = try? decoder.decode([Adventure].self, from: data) else {
-            return AdventureSamples.all
+            return validateAndFilter(AdventureSamples.all)
         }
-        return mergeSamples(with: stored)
+        return validateAndFilter(mergeSamples(with: stored))
+    }
+
+    private static func isValidCoordinate(_ lat: Double, _ lng: Double) -> Bool {
+        lat != 0 && lng != 0 &&
+        lat >= -90 && lat <= 90 &&
+        lng >= -180 && lng <= 180
+    }
+
+    private static func validateAndFilter(_ adventures: [Adventure]) -> [Adventure] {
+        adventures.filter { adv in
+            let valid = isValidCoordinate(adv.latitude, adv.longitude)
+            if !valid {
+                print("⚠️ MicroAdventures: invalid coordinates for '\(adv.title)' — excluded from picks")
+            }
+            return valid
+        }
     }
 
     private static func mergeSamples(with stored: [Adventure]) -> [Adventure] {
