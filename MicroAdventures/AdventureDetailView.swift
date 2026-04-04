@@ -34,7 +34,7 @@ struct AdventureDetailView: View {
                         detailRow(label: "End point", value: adventure.endName)
                     }
                     .padding(14)
-                    .background(Color.secondary.opacity(0.12), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    .background(AppColor.chipBackground, in: RoundedRectangle(cornerRadius: AppRadius.md, style: .continuous))
 
                     actionSection
 

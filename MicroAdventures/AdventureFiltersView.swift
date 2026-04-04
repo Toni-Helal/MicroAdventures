@@ -136,8 +136,8 @@ struct AdventureFiltersView: View {
             .font(.subheadline)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 8)
-            .foregroundStyle(isSelected ? .white : .primary)
-            .background(isSelected ? Color.accentColor : Color.secondary.opacity(0.16))
+            .foregroundStyle(isSelected ? .white : AppColor.textPrimary)
+            .background(isSelected ? AppColor.chipSelected : AppColor.chipBackground)
             .clipShape(Capsule())
         }
         .buttonStyle(.plain)

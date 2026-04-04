@@ -45,7 +45,7 @@ struct QuickTuneBarView: View {
 
     private var tuneDivider: some View {
         Rectangle()
-            .fill(Color.primary.opacity(0.12))
+            .fill(AppColor.textTertiary.opacity(0.4))
             .frame(width: 1, height: 14)
             .padding(.horizontal, 2)
     }
@@ -70,7 +70,7 @@ private struct QuickTuneChip: View {
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
-            .background(isSelected ? Color.primary.opacity(0.22) : Color.primary.opacity(0.08))
+            .background(isSelected ? AppColor.accentSubtle : AppColor.chipBackground)
             .foregroundStyle(.primary)
             .clipShape(Capsule())
         }

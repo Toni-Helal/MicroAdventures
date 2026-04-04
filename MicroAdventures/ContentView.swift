@@ -37,19 +37,19 @@ struct ContentView: View {
 
     private var cardStyle: AdventureCardStyle {
         AdventureCardStyle(
-            cardBackground: colorScheme == .dark ? Color.black.opacity(0.65) : Color.white.opacity(0.9),
-            chipBackground: colorScheme == .dark ? Color.white.opacity(0.12) : Color.gray.opacity(0.15),
-            doneButtonBackground: colorScheme == .dark ? Color.white.opacity(0.2) : Color.gray.opacity(0.25),
-            doneButtonForeground: colorScheme == .dark ? Color.white.opacity(0.9) : Color.gray.opacity(0.9)
+            cardBackground: AppColor.surface,
+            chipBackground: AppColor.chipBackground,
+            doneButtonBackground: AppColor.chipBackground,
+            doneButtonForeground: AppColor.textSecondary
         )
     }
 
     private var actionIconColor: Color {
-        colorScheme == .dark ? Color.white.opacity(0.9) : Color.gray.opacity(0.85)
+        AppColor.textSecondary
     }
 
     private var pinColor: Color {
-        colorScheme == .dark ? Color.white.opacity(0.85) : Color.gray
+        AppColor.accent
     }
 
     private var displayAdventure: Adventure? {
@@ -144,11 +144,41 @@ struct ContentView: View {
         Map(position: $cameraPosition) {
             UserAnnotation()
             if let adventure = displayAdventure {
-                Annotation(adventure.locationName, coordinate: adventure.coordinate) {
-                    Image(systemName: "mappin.circle.fill")
-                        .font(.title2)
-                        .foregroundStyle(pinColor)
-                        .shadow(radius: 2)
+                let hasDistinctEndpoint = adventure.startLatitude != adventure.endLatitude ||
+                                          adventure.startLongitude != adventure.endLongitude
+                if hasDistinctEndpoint {
+                    Annotation("Start", coordinate: CLLocationCoordinate2D(
+                        latitude: adventure.startLatitude, longitude: adventure.startLongitude
+                    )) {
+                        ZStack {
+                            Circle().fill(AppColor.success).frame(width: 30, height: 30)
+                                .appShadow(AppShadow.subtle)
+                            Image(systemName: "flag.fill")
+                                .font(.caption2.weight(.bold))
+                                .foregroundStyle(.white)
+                        }
+                    }
+                    Annotation("End", coordinate: CLLocationCoordinate2D(
+                        latitude: adventure.endLatitude, longitude: adventure.endLongitude
+                    )) {
+                        ZStack {
+                            Circle().fill(AppColor.warning).frame(width: 30, height: 30)
+                                .appShadow(AppShadow.subtle)
+                            Image(systemName: "flag.checkered")
+                                .font(.caption2.weight(.bold))
+                                .foregroundStyle(.white)
+                        }
+                    }
+                } else {
+                    Annotation(adventure.locationName, coordinate: adventure.coordinate) {
+                        ZStack {
+                            Circle().fill(AppColor.accent).frame(width: 30, height: 30)
+                                .appShadow(AppShadow.subtle)
+                            Image(systemName: "mappin")
+                                .font(.caption2.weight(.bold))
+                                .foregroundStyle(.white)
+                        }
+                    }
                 }
             }
         }
@@ -168,6 +198,7 @@ struct ContentView: View {
                 AdventureCardView(
                     adventure: adventure,
                     whyText: viewModel.whyThisText(for: adventure, tier: viewModel.currentTier ?? .bestAvailable),
+                    distanceText: viewModel.distanceText(for: adventure),
                     style: cardStyle,
                     onOpenDetails: {
                         detailAdventure = adventure
