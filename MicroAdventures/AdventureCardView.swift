@@ -10,6 +10,7 @@ struct AdventureCardStyle {
 struct AdventureCardView: View {
     let adventure: Adventure
     let whyText: String
+    let distanceText: String?
     let style: AdventureCardStyle
     let onOpenDetails: () -> Void
     let onAnotherPick: () -> Void
@@ -20,24 +21,30 @@ struct AdventureCardView: View {
             VStack(alignment: .leading, spacing: 8) {
                 HStack(spacing: 8) {
                     Label(adventure.category.rawValue, systemImage: adventure.category.icon)
-                        .font(.caption)
+                        .font(AppFont.caption)
                         .padding(.horizontal, 10)
                         .padding(.vertical, 6)
-                        .background(style.chipBackground)
-                        .clipShape(Capsule())
+                        .background(adventure.category.tintColor, in: Capsule())
 
                     Text(adventure.effort.rawValue)
-                        .font(.caption)
+                        .font(AppFont.caption)
                         .padding(.horizontal, 10)
                         .padding(.vertical, 6)
-                        .background(style.chipBackground)
-                        .clipShape(Capsule())
+                        .background(AppColor.chipBackground, in: Capsule())
+
+                    if let dist = distanceText {
+                        Label(dist, systemImage: "location.fill")
+                            .font(AppFont.caption)
+                            .foregroundStyle(AppColor.accent)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 6)
+                            .background(AppColor.accentSubtle, in: Capsule())
+                    }
                 }
 
                 Text(adventure.title)
-                    .font(.headline)
-                    .bold()
-                    .foregroundStyle(.primary)
+                    .font(AppFont.headline)
+                    .foregroundStyle(AppColor.textPrimary)
                     .lineLimit(2)
 
                 Text("Why this? \(whyText)")
@@ -70,10 +77,15 @@ struct AdventureCardView: View {
                     AdventureInfoRow(icon: "flag", text: "Start: \(adventure.startPointName)")
                     AdventureInfoRow(icon: "flag.checkered", text: "End: \(adventure.endPointName)")
                 }
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("Energy \(adventure.recommendedEnergy.rawValue), best time \(adventure.bestTimeWindow.rawValue), start at \(adventure.startPointName), end at \(adventure.endPointName)")
 
-                Text("Tap card for details")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
+                HStack {
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption2)
+                        .foregroundStyle(AppColor.textTertiary)
+                }
             }
             .contentShape(Rectangle())
             .onTapGesture {
@@ -95,6 +107,7 @@ struct AdventureCardView: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Reroll today's adventure")
+                .accessibilityHint("Double tap to get a different adventure suggestion")
 
                 Spacer()
 
@@ -107,17 +120,18 @@ struct AdventureCardView: View {
                         .font(.subheadline)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
-                        .background(adventure.isCompleted ? Color.green.opacity(0.25) : style.doneButtonBackground)
-                        .foregroundStyle(style.doneButtonForeground)
+                        .background(adventure.isCompleted ? AppColor.successSubtle : style.doneButtonBackground)
+                        .foregroundStyle(adventure.isCompleted ? AppColor.success : style.doneButtonForeground)
                         .clipShape(Capsule())
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(adventure.isCompleted ? "Adventure completed" : "Mark adventure as completed")
+                .accessibilityHint(adventure.isCompleted ? "Double tap to mark as not completed" : "Double tap to record this adventure as done")
             }
         }
-        .padding(14)
-        .background(style.cardBackground, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .shadow(color: .black.opacity(0.1), radius: 8, y: 4)
+        .padding(AppSpacing.md - 2)
+        .background(style.cardBackground, in: RoundedRectangle(cornerRadius: AppRadius.lg, style: .continuous))
+        .appShadow(AppShadow.card)
     }
 }
 
